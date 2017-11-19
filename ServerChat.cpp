@@ -66,8 +66,10 @@ int ServerChat::listen_connect(int player)
                 string tmp(name);
                 tmp += ":" + string(pmsg->message);
                 strcpy(pmsg->message, tmp.c_str());
+                dlock();
+                logging(tmp);
+                dunlock();
                 for (auto &it : players) {
-
                     send(it.second.first, pmsg, sizeof(msg), 0);
                 }
                 break;

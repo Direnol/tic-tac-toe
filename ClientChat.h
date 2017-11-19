@@ -9,11 +9,21 @@ private:
     int sock;
     string ip;
     int port;
+    string player_name;
 public:
     ClientChat(const char *ip, int port);
 
     ~ClientChat();
 
+    void nameSet();
+
+    int nameSend();
+
+    int messageSend();
+
+    int messageRecv();
+
+    void start();
 };
 
 

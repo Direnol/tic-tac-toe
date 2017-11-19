@@ -2,7 +2,7 @@
 
 int main() {
     try {
-        ClientChat("192.168.1.7", 6969);
+        ClientChat("127.0.0.1", 6969);
     } catch (ERROR_CHAT e) {
         printf("Error: %d", e);
     }

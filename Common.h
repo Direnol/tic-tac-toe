@@ -34,4 +34,10 @@ enum ERROR_CHAT {
     ERROR_CONNECT
 };
 
+enum COMMANDS{
+    ALL,
+    GAME,
+    OPTIONS
+};
+
 #endif //TIC_TAC_TOE_COMMON_H

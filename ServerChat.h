@@ -6,15 +6,15 @@
 class ServerChat {
 private:
     int sock;
-    queue<int, pair<string, string>> qmsg;
-    // <sock, addr>
-    map<int, sockaddr_in> sockets;
-    // <name, sock>
-    map<string, int> players;
+    // <sock, namer>
+    map<int, string> sockets;
+    // <name, <sock, status> >
+    map<string, pair<int, int> > players;
+
     ofstream log;
     bool work;
     vector<thread> threads;
-    mutex mutex;
+    mutex mut;
 public:
     ServerChat(const char *ip, uint16_t port);
     ~ServerChat();

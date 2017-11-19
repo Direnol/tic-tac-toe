@@ -3,12 +3,13 @@
 
 int main()
 {
+    ServerChat *chat = nullptr;
     try {
-        ServerChat foo("192.168.1.7", 6969);
-        foo.server();
+        chat = new ServerChat("127.0.0.1", 6969);
     } catch (ERROR_CHAT e) {
-        printf("%d\n", e);
+        cout << e << endl;
     }
+    chat->server();
 
     return 0;
 }

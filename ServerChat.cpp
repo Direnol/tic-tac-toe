@@ -33,29 +33,58 @@ ServerChat::~ServerChat()
 int ServerChat::listen_connect(int player)
 {
     void *ptr = new char[BUFFER_SIZE];
-    char *pch = nullptr;
-    int res;
+    auto *pch = static_cast<char *>(ptr);
+    auto *pmsg = static_cast<msg *>(ptr);
+    ssize_t res;
     do {
         res = static_cast<int>(recv(player, ptr, BUFFER_SIZE, 0));
         if (res <= 0) {
-            close(res);
+            close(player);
             return 0;
         }
-        pch = static_cast<char *>(ptr);
         if (players.find(string(pch)) == players.end()) {
-            players.insert(make_pair(string(pch), player));
+            players.insert(make_pair(string(pch), make_pair(player, ALL)));
+            this->sockets.insert(make_pair(player, string(pch)));
             send(player, "OK", strlen("OK"), 0);
             break;
         }
         send(player, "NO", strlen("NO"), 0);
     } while (true);
+
     dlock();
     log << pch << " has been connected" << endl;
     dunlock();
+    string name(pch);
+    while (work) {
+        res = recv(player, ptr, BUFFER_SIZE, 0);
+        if (res <= 0) {
+            close(player);
+            return 1;
+        }
+        switch (pmsg->code) {
+            case (ALL): {
+                string tmp(name);
+                tmp += ":" + string(pmsg->message);
+                strcpy(pmsg->message, tmp.c_str());
+                for (auto &it : players) {
 
-    while ((res = static_cast<int>(recv(sock, ptr, BUFFER_SIZE, 0)))) {
+                    send(it.second.first, pmsg, sizeof(msg), 0);
+                }
+                break;
+            }
+            case (GAME) : {
 
+                break;
+            }
+            case (OPTIONS): {
 
+                break;
+            }
+            default: {
+                cout << "Default switch find " << pmsg->code << endl;
+                break;
+            }
+        }
     }
 
     delete (char *)ptr;
@@ -66,7 +95,7 @@ int ServerChat::listen_connect(int player)
 int ServerChat::server()
 {
     int new_fd = -1;
-    sockaddr_in new_connect;
+    sockaddr_in new_connect{};
     socklen_t socklen = sizeof(new_connect);
     string nameconnect;
     while (work) {
@@ -77,7 +106,6 @@ int ServerChat::server()
             to_string(new_connect.sin_port);
         this->dlock();
         log << "New connect [" << nameconnect << "]\n";
-        this->sockets.insert(make_pair(new_fd, new_connect));
         this->dunlock();
         threads.emplace_back(thread(&ServerChat::listen_connect, this, new_fd));
     }
@@ -90,12 +118,12 @@ int ServerChat::connect2(int player1, int player2)
 
 void ServerChat::dlock()
 {
-    mutex.lock();
+    mut.lock();
 }
 
 void ServerChat::dunlock()
 {
-    mutex.unlock();
+    mut.unlock();
 }
 void ServerChat::logging(string s)
 {

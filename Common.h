@@ -11,13 +11,19 @@
 #include <arpa/inet.h>
 #include <thread>
 #include <map>
-#include <string.h>
+#include <cstring>
 #include <mutex>
 #include <sys/socket.h>
+#include <iostream>
 
 #define BUFFER_SIZE 128
 
 using namespace std;
+
+struct msg {
+    int code;
+    char message[60];
+};
 
 enum ERROR_CHAT {
     ERROR_IP = 1,

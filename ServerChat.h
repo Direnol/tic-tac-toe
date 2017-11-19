@@ -1,24 +1,7 @@
 #ifndef TIC_TAC_TOE_ServerChat_H
 #define TIC_TAC_TOE_ServerChat_H
 
-#include <cstdint>
-#include <queue>
-#include <vector>
-#include <string>
-#include <netinet/in.h>
-#include <fstream>
-#include <cstdlib>
-#include <unistd.h>
-#include <arpa/inet.h>
-
-
-enum ERROR_CHAT{
-    ERROR_IP,
-    ERROR_PORT,
-    ERROR_SOCK,
-    ERROR_BIND,
-    ERROR_LOG
-};
+#include "Common.h"
 
 class ServerChat {
 private:

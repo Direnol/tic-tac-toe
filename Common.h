@@ -15,8 +15,11 @@
 #include <mutex>
 #include <sys/socket.h>
 #include <iostream>
+#include <ctime>
+
 
 #define BUFFER_SIZE 128
+#define PLAYER_NAME_SIZE 10
 
 using namespace std;
 

@@ -1,3 +1,4 @@
+#include <sstream>
 #include "ServerChat.h"
 
 using namespace std;
@@ -10,8 +11,8 @@ ServerChat::ServerChat(const char *ip, uint16_t port)
     int on = 1;
     setsockopt(this->sock, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on));
     sockaddr_in sock_in = {
-        .sin_family = AF_INET,
-        .sin_port = htons(port),
+            .sin_family = AF_INET,
+            .sin_port = htons(port),
     };
     sock_in.sin_addr.s_addr = inet_addr(ip);
 
@@ -30,6 +31,7 @@ ServerChat::~ServerChat()
     log.close();
     close(sock);
 }
+
 int ServerChat::listen_connect(int player)
 {
     void *ptr = new char[BUFFER_SIZE];
@@ -66,8 +68,11 @@ int ServerChat::listen_connect(int player)
                 string tmp(name);
                 tmp += ":" + string(pmsg->message);
                 strcpy(pmsg->message, tmp.c_str());
+                dlock();
+                logging(tmp);
+                dunlock();
                 for (auto &it : players) {
-
+                    if (it.second.first == player) continue;
                     send(it.second.first, pmsg, sizeof(msg), 0);
                 }
                 break;
@@ -98,14 +103,17 @@ int ServerChat::server()
     sockaddr_in new_connect{};
     socklen_t socklen = sizeof(new_connect);
     string nameconnect;
+
     while (work) {
         // check connect;
         new_fd = accept(sock, (sockaddr *) (&new_connect), &socklen);
         if (new_fd <= 0) continue;
         nameconnect = string(inet_ntoa(new_connect.sin_addr)) + ":" +
-            to_string(new_connect.sin_port);
+                      to_string(new_connect.sin_port);
         this->dlock();
-        log << "New connect [" << nameconnect << "]\n";
+        log << "New connect [" << nameconnect << "] ";
+        log << get_time() << __DATE__ << "\n";
+
         this->dunlock();
         threads.emplace_back(thread(&ServerChat::listen_connect, this, new_fd));
     }
@@ -128,4 +136,17 @@ void ServerChat::dunlock()
 void ServerChat::logging(string s)
 {
     log << s << endl;
+}
+
+string ServerChat::get_time() {
+    time_t cur_sec = time(nullptr);
+
+    stringstream time;
+
+    tm *tmp_time = localtime(&cur_sec);
+
+    asctime(tmp_time);
+    time << tmp_time->tm_hour << ':' << tmp_time->tm_min << ':' << tmp_time->tm_sec;
+    time << " ";
+    return time.str();
 }

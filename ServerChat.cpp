@@ -34,29 +34,50 @@ int ServerChat::listen_connect(int player)
 {
     void *ptr = new char[BUFFER_SIZE];
     char *pch = nullptr;
+    int res;
+    do {
+        res = static_cast<int>(recv(player, ptr, BUFFER_SIZE, 0));
+        if (res <= 0) {
+            close(res);
+            return 0;
+        }
+        pch = static_cast<char *>(ptr);
+        if (players.find(string(pch)) == players.end()) {
+            players.insert(make_pair(string(pch), player));
+            send(player, "OK", strlen("OK"), 0);
+            break;
+        }
+        send(player, "NO", strlen("NO"), 0);
+    } while (true);
+    dlock();
+    log << pch << " has been connected" << endl;
+    dunlock();
 
-    int res = static_cast<int>(recv(player, ptr, BUFFER_SIZE, 0));
-    if (res <= 0) {
-        close(res);
-        return 0;
+    while ((res = static_cast<int>(recv(sock, ptr, BUFFER_SIZE, 0)))) {
+
+
     }
 
+    delete (char *)ptr;
+    close(player);
+    return 0;
 }
+
 int ServerChat::server()
 {
     int new_fd = -1;
     sockaddr_in new_connect;
     socklen_t socklen = sizeof(new_connect);
-    std::string nameconnect;
+    string nameconnect;
     while (work) {
         // check connect;
         new_fd = accept(sock, (sockaddr *) (&new_connect), &socklen);
         if (new_fd <= 0) continue;
-        nameconnect = std::string(inet_ntoa(new_connect.sin_addr)) + ":" +
-            std::to_string(new_connect.sin_port);
-        log << "New connect [" << nameconnect << "]\n";
+        nameconnect = string(inet_ntoa(new_connect.sin_addr)) + ":" +
+            to_string(new_connect.sin_port);
         this->dlock();
-        this->sockets.insert(make_pair(new_connect, nameconnect));
+        log << "New connect [" << nameconnect << "]\n";
+        this->sockets.insert(make_pair(new_fd, new_connect));
         this->dunlock();
         threads.emplace_back(thread(&ServerChat::listen_connect, this, new_fd));
     }
@@ -76,7 +97,7 @@ void ServerChat::dunlock()
 {
     mutex.unlock();
 }
-void ServerChat::logging(std::string s)
+void ServerChat::logging(string s)
 {
-    log << s << std::endl;
+    log << s << endl;
 }

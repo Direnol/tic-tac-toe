@@ -1,7 +1,6 @@
 #ifndef TIC_TAC_TOE_COMMON_H
 #define TIC_TAC_TOE_COMMON_H
 
-#include <cstdint>
 #include <queue>
 #include <vector>
 #include <string>
@@ -10,6 +9,16 @@
 #include <cstdlib>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include <thread>
+#include <map>
+#include <string.h>
+#include <mutex>
+
+using namespace std;
+
+
+
+#define BUFFER_SIZE 128
 
 enum ERROR_CHAT {
     ERROR_IP = 1,

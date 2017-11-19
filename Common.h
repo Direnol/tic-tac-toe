@@ -1,7 +1,6 @@
 #ifndef TIC_TAC_TOE_COMMON_H
 #define TIC_TAC_TOE_COMMON_H
 
-#include <cstdint>
 #include <queue>
 #include <vector>
 #include <string>
@@ -10,7 +9,10 @@
 #include <cstdlib>
 #include <unistd.h>
 #include <arpa/inet.h>
-#include <iostream>
+#include <thread>
+#include <map>
+#include <string.h>
+#include <mutex>
 #include <sys/socket.h>
 
 #define BUFFER_SIZE 128

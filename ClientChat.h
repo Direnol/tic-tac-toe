@@ -11,8 +11,8 @@ private:
     int port;
 public:
     ClientChat(const char *ip, int port);
-    ~ClientChat();
 
+    ~ClientChat();
 
 };
 

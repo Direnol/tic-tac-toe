@@ -9,6 +9,6 @@ int main()
     } catch (ERROR_CHAT e) {
         printf("%d\n", e);
     }
-    foo.
+
     return 0;
 }

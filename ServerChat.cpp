@@ -22,6 +22,7 @@ ServerChat::ServerChat(const char *ip, uint16_t port)
     log.open(filelog);
     if (!log.good()) throw ERROR_LOG;
     printf("Chat: ip:port=[%s:%d]\nlog=[%s]\n", ip, port, filelog);
+    work = true;
 }
 
 ServerChat::~ServerChat()
@@ -29,15 +30,53 @@ ServerChat::~ServerChat()
     log.close();
     close(sock);
 }
-int ServerChat::add_players(int p1, int p2)
+int ServerChat::listen_connect(int player)
 {
-    return 0;
+    void *ptr = new char[BUFFER_SIZE];
+    char *pch = nullptr;
+
+    int res = static_cast<int>(recv(player, ptr, BUFFER_SIZE, 0));
+    if (res <= 0) {
+        close(res);
+        return 0;
+    }
+
 }
 int ServerChat::server()
 {
+    int new_fd = -1;
+    sockaddr_in new_connect;
+    socklen_t socklen = sizeof(new_connect);
+    std::string nameconnect;
+    while (work) {
+        // check connect;
+        new_fd = accept(sock, (sockaddr *) (&new_connect), &socklen);
+        if (new_fd <= 0) continue;
+        nameconnect = std::string(inet_ntoa(new_connect.sin_addr)) + ":" +
+            std::to_string(new_connect.sin_port);
+        log << "New connect [" << nameconnect << "]\n";
+        this->dlock();
+        this->sockets.insert(make_pair(new_connect, nameconnect));
+        this->dunlock();
+        threads.emplace_back(thread(&ServerChat::listen_connect, this, new_fd));
+    }
     return 0;
 }
 int ServerChat::connect2(int player1, int player2)
 {
     return 0;
+}
+
+void ServerChat::dlock()
+{
+    mutex.lock();
+}
+
+void ServerChat::dunlock()
+{
+    mutex.unlock();
+}
+void ServerChat::logging(std::string s)
+{
+    log << s << std::endl;
 }

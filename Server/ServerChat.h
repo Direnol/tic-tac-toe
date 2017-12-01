@@ -1,7 +1,7 @@
 #ifndef TIC_TAC_TOE_ServerChat_H
 #define TIC_TAC_TOE_ServerChat_H
 
-#include "Common.h"
+#include "../Headers/Common.h"
 
 class ServerChat {
 private:

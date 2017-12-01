@@ -4,11 +4,11 @@ project(tic_tac_toe)
 set(CMAKE_CXX_STANDARD 17)
 
 set(SOURCE_FILES_CLIENT
-        client.cpp ClientChat.cpp ClientChat.h Common.h)
+        Client/client.cpp Client/ClientChat.cpp Client/ClientChat.h Headers/Common.h)
 
 
 set(SOURCE_FILES_SERVER
-        server.cpp ServerChat.cpp ServerChat.h Common.h)
+        Server/server.cpp Server/ServerChat.cpp Server/ServerChat.h Headers/Common.h)
 
 add_executable(${PROJECT_NAME}_server ${SOURCE_FILES_SERVER})
 target_link_libraries(${PROJECT_NAME}_server pthread ncurses)

@@ -6,7 +6,6 @@ ClientChat::ClientChat(const char *ip, int port) {
     this->port = port;
 
     sock = socket(AF_INET, SOCK_STREAM, 0);
-
     sockaddr_in sock_in{};
     sock_in.sin_family = AF_INET;
     sock_in.sin_port = htons(static_cast<uint16_t>(port));
@@ -54,7 +53,6 @@ int ClientChat::messageSend() {
         strcpy(pmsg.message, tmp.c_str());
 
         if (send(sock, &pmsg, sizeof(msg), 0) <= 0) break;
-
     }
     return 0;
 }
@@ -75,7 +73,6 @@ void ClientChat::start() {
 
     th[0] = thread(&ClientChat::messageSend, this);
     th[1] = thread(&ClientChat::messageRecv, this);
-
     for (auto &i : th) i.join();
 }
 
@@ -91,7 +88,6 @@ COMMANDS ClientChat::get_command(string message, msg pmsg) {
             // TODO: обработчик клиентских команд
         }
     }
-    return ALL;
 }
 
 

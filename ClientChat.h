@@ -24,6 +24,8 @@ public:
     int messageRecv();
 
     void start();
+
+    COMMANDS get_command(string message, msg pmsg);
 };
 
 

@@ -6,7 +6,7 @@
 class ServerChat {
 private:
     int sock;
-    // <sock, namer>
+    // <sock, name>
     map<int, string> sockets;
     // <name, <sock, status> >
     map<string, pair<int, int> > players;
@@ -24,6 +24,11 @@ public:
     void dunlock();
     int connect2(int player1, int player2);
     void logging(string s);
+
+    string get_time();
+
+    string get_date();
+
 };
 
 #endif //TIC_TAC_TOE_ServerChat_H

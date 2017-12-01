@@ -2,7 +2,7 @@
 #define TIC_TAC_TOE_CLIENTCHAT_H
 
 
-#include "Common.h"
+#include "../Headers/Common.h"
 
 class ClientChat {
 private:
@@ -24,6 +24,8 @@ public:
     int messageRecv();
 
     void start();
+
+    COMMANDS get_command(string message, msg pmsg);
 };
 
 

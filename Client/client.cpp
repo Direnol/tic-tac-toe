@@ -3,13 +3,7 @@
 
 int main() {
     Gui gui;
-
-    // gui.Init();
-    gui.textPrint();
-    /*ClientChat client("127.0.0.1", 6969);
-    client.nameSend();
-    client.start();
-    */
+    gui.initMainWindow();
 
     return 0;
 }

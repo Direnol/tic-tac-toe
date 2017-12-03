@@ -17,17 +17,26 @@
 // TODO: Description GUI for client
 class Gui : public ClientChat {
 private:
-    enum TextFormat {
+    int mx, // MainWindow x
+        my; // MainWidnwo y
+    int gx, // GameWindow x
+        gy; // GameWindow y
 
-    };
+    WINDOW *game;
+    WINDOW *chat_in;
+    WINDOW *chat_out;
 public:
     Gui();
 
     ~Gui() override;
 
-    void Init();
+    void initMainWindow();
 
-    void textPrint();
+    void initGameWindow();
+
+    void initChatInWindow();
+
+    void initChatOutWindow();
 };
 
 

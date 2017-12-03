@@ -44,6 +44,7 @@ Gui::~Gui()
 
 void Gui::repaint()
 {
+    clear();
     DelWin();
     InitAllWin();
     initMainWindow();

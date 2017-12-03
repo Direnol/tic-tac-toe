@@ -30,6 +30,10 @@ private:
     WINDOW *game;
     WINDOW *chat_in;
     WINDOW *chat_out;
+
+    void DelWin();
+
+    void InitAllWin();
 public:
     Gui();
 
@@ -42,6 +46,10 @@ public:
     void initChatInWindow();
 
     void initChatOutWindow();
+
+    void repaint();
+
+    void loop();
 };
 
 

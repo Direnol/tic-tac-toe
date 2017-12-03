@@ -7,7 +7,7 @@ Gui::Gui() {
     box(stdscr, 0, 0);
     this->gy = this->my / 2;
     this->gx = this->mx / 2;
-    mvwprintw(stdscr, my - 3, 3, "%d|%d String status", my, mx);
+    mvwprintw(stdscr, my - 3, 3, "[%d|%d] [%d|%d] String status", my, mx, gy, gx);
     refresh();
 
 }
@@ -29,7 +29,8 @@ void Gui::initGameWindow() {
 }
 
 void Gui::initChatInWindow() {
-    chat_in = newwin(5, mx - gx - 2, my - (gy - 3), gx + 1);
+    int input_area = my - (gy * 2 - gy * 1 / 2);
+    chat_in = newwin((input_area) < 7 ? input_area - 1 : input_area, mx - gx - 2, my - (gy - 3), gx + 1);
     box(chat_in, 0, 0);
     wrefresh(chat_in);
 

@@ -11,9 +11,10 @@ private:
     int port;
     string player_name;
 public:
+    ClientChat();
     ClientChat(const char *ip, int port);
 
-    ~ClientChat();
+    virtual ~ClientChat();
 
     void nameSet();
 

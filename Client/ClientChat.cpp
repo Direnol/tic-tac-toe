@@ -90,5 +90,7 @@ COMMANDS ClientChat::get_command(string message, msg pmsg) {
     }
 }
 
+ClientChat::ClientChat() = default;
+
 
 

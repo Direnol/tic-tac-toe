@@ -2,6 +2,7 @@
 
 Gui::Gui() {
     initscr();
+    signal(SIGWINCH, resize_term);
     getmaxyx(stdscr, this->my, this->mx);
     box(stdscr, 0, 0);
     this->gy = this->my / 2;
@@ -47,4 +48,8 @@ Gui::~Gui() {
     delwin(chat_in);
     endwin();
 
+}
+void resize_term(int sig)
+{
+    printf("\e[8;%d;%d;t", 24, 80);
 }

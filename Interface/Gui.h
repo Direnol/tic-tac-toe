@@ -4,6 +4,8 @@
 #include "../Client/ClientChat.h"
 #include <ncurses.h>
 #include <form.h>
+#include <sys/ioctl.h>
+#include <csignal>
 
 /* TODO: Description ncurses text-style
     A_NORMAL             //- обычный режим
@@ -13,6 +15,9 @@
     A_DIM                //- тусклый символ
     A_BOLD               //- выделение жирным шрифтом
 */
+
+
+void resize_term(int sig);
 
 // TODO: Description GUI for client
 class Gui : public ClientChat {

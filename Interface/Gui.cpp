@@ -26,19 +26,18 @@ void Gui::initGameWindow()
 void Gui::initChatInWindow()
 {
     int input_area = my - (gy * 2 - gy * 1 / 2);
-    chat_in = newwin((input_area) < 7 ? input_area - 1 : input_area, mx - gx - 2, my - (gy - 3), gx + 1);
-    box(chat_in, 0, 0);
-    wrefresh(chat_in);
-    input = derwin(chat_in, getmaxy(chat_in) - 2, getmaxx(chat_in) - 2, 1, 1);
+    chat_in_box = newwin((input_area) < 7 ? input_area - 1 : input_area, mx - gx - 2, my - (gy - 3), gx + 1);
+    box(chat_in_box, 0, 0);
+    wrefresh(chat_in_box);
+    input_chat = derwin(chat_in_box, getmaxy(chat_in_box) - 2, getmaxx(chat_in_box) - 2, 1, 1);
 
 }
 
 void Gui::initChatOutWindow()
 {
-    chat_out = newwin(my - (gy - 2), mx - gx - 2, 1, gx + 1);
-    box(chat_out, 0, 0);
-    wrefresh(chat_out);
-
+    chat_out_box = newwin(my - (gy - 2), mx - gx - 2, 1, gx + 1);
+    box(chat_out_box, 0, 0);
+    wrefresh(chat_out_box);
 }
 
 Gui::~Gui()
@@ -56,11 +55,11 @@ void Gui::repaint()
 
 void Gui::DelWin()
 {
-    delwin(input);
+    delwin(input_chat);
     delwin(area);
     delwin(game);
-    delwin(chat_out);
-    delwin(chat_in);
+    delwin(chat_out_box);
+    delwin(chat_in_box);
     endwin();
 
 }
@@ -68,7 +67,8 @@ void Gui::InitAllWin()
 {
     initscr();
     getmaxyx(stdscr, this->my, this->mx);
-    curs_set(0);
+    noecho();
+    keypad(stdscr, TRUE);
     box(stdscr, 0, 0);
     this->gy = this->my / 2;
     this->gx = this->mx / 2;
@@ -78,14 +78,23 @@ void Gui::InitAllWin()
 }
 void Gui::loop()
 {
-    status = 1;
-    while (wgetch(input) != '\n') {
+    int cur = 0;
+    chtype c;
+    while ((c = static_cast<chtype>(getch())) != KEY_F(10)) {
         if (status)
             tic_tac_toe();
         else
             menu();
+        if (c == '\t') {
+            cur ^= 1;
+            continue;
+        }
+        if (cur == 0) {
+            keymap_chat(c);
+        } else {
+            //
+        }
     }
-//    while (1) {}
 }
 void Gui::menu()
 {
@@ -159,5 +168,55 @@ int Gui::pressedKey(unsigned int key) {
     }
 
     return 0;
+}
+void Gui::keymap_chat(chtype c)
+{
+    if (c == '\n') {
+        // TODO: send
+
+        return;
+    }
+    int mx, my, x, y;
+    getmaxyx(input_chat, my, mx);
+    getyx(input_chat, y, x);
+    switch (c) {
+        case (KEY_LEFT): {
+            if (chat.pos == 0) break;
+            --chat.pos;
+            if (x == 0) {
+                wmove(input_chat, y - 1, mx);
+            } else {
+                wmove(input_chat, y, x - 1);
+            }
+            break;
+        }
+        case (KEY_RIGHT): {
+            if (chat.pos == chat.max) break;
+            ++chat.pos;
+            if (x == mx) {
+                wmove(input_chat, y + 1, 0);
+            } else {
+                wmove(input_chat, y, x + 1);
+            }
+            break;
+        }
+        case 127: {
+            if (chat.pos == 0) break;
+            --chat.pos;
+            if (x == 0) {
+                wmove(input_chat, y - 1, mx);
+            } else {
+                wmove(input_chat, y, x - 1);
+            }
+            wdelch(input_chat);
+            break;
+        }
+        default: {
+            if (x == mx && y == mx) break;
+            if (chat.pos == chat.max) ++chat.max;
+            ++chat.pos;
+            waddch(input_chat, c);
+        }
+    }
 }
 

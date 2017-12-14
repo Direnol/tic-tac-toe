@@ -69,7 +69,8 @@ void Gui::InitAllWin()
 {
     initscr();
     getmaxyx(stdscr, this->my, this->mx);
-    curs_set(0);
+    noecho();
+    keypad(stdscr, TRUE);
     box(stdscr, 0, 0);
     this->gy = this->my / 2;
     this->gx = this->mx / 2;
@@ -79,7 +80,6 @@ void Gui::InitAllWin()
 }
 void Gui::loop()
 {
-    keymap func[] = {keymap_chat};
     int cur = 0;
     chtype c;
     while ((c = static_cast<chtype>(getch())) != KEY_F(10)) {
@@ -91,7 +91,11 @@ void Gui::loop()
             cur ^= 1;
             continue;
         }
-        func[cur](c);
+        if (cur == 0) {
+            keymap_chat(c);
+        } else {
+            //
+        }
     }
 }
 void Gui::menu()

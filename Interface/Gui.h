@@ -28,8 +28,6 @@ struct Chat {
     int max;
 };
 
-typedef void (*keymap)(chtype);
-
 
 // TODO: Description GUI for client
 class Gui : public ClientChat {

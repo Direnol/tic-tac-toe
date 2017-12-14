@@ -110,7 +110,7 @@ private:
     ClientChat *tcp_chat;
 
 public:
-    Gui(char *ip, int port);
+    Gui();
 
     ~Gui() override;
 

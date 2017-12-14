@@ -1,6 +1,6 @@
 #include "Gui.h"
 
-Gui::Gui(char *ip, int port) {
+Gui::Gui() {
     InitAllWin();
     status = 0;
 

@@ -20,7 +20,17 @@
 void resize_term(int sig);
 
 struct tic_tac {
-    char area[3][3];
+    char area[3][3]{};
+    int i; // coords game area
+    int j; //
+    int figure;
+
+    tic_tac() {
+        i = j = 0;
+        figure = 2;
+        for (auto &i : area)
+            memset(i, 2, 3);
+    }
 };
 
 // TODO: Description GUI for client
@@ -81,7 +91,9 @@ private:
 
     void tic_tac_toe();
 
-    void paint(int x, int y, int c);
+    void paint(int x, int y, int sybmol, int type_char = 0);
+
+    int pressedKey(unsigned int key);
 
 public:
     Gui();

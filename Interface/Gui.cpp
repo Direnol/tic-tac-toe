@@ -4,8 +4,6 @@ Gui::Gui()
 {
     InitAllWin();
     status = 0;
-    for (auto &i : play.area)
-        memset(i, 2, 3);
 
     initMainWindow();
 }
@@ -94,30 +92,72 @@ void Gui::menu()
 
 }
 
+// Отрисовка Х либо О на поле
 void Gui::tic_tac_toe()
 {
     for (int i = 0; i < 3; ++i) {
         for (int j = 0; j < 3; ++j) {
             if (play.area[i][j] == 0) {
+                if (play.i == i && play.j == j)
+                    paint(j + 2, i, 0, 1);
                 paint(j + 2, i, 0);
-            }
-            else if (play.area[i][j] == 1) {
+            } else if (play.area[i][j] == 1) {
+                if (play.i == i && play.j == j)
+                    paint(j + 2, i, 1, 1);
                 paint(j + 2, i, 1);
-            }
-            else {
+            } else {
+                if (play.i == i && play.j == j)
+                    paint(j + 2, i, 2, 1);
                 paint(j + 2, i, 2);
             }
             wrefresh(area);
         }
     }
 }
-void Gui::paint(int x, int y, int c)
+
+void Gui::paint(int x, int y, int sybmol, int type_char = 0)
 {
     int size = 5;
     for (int i = 0; i < 5; ++i) {
         for (int j = 0; j < 5; ++j) {
-            mvwaddch(area, y * size + i, x * size + j, FIGURE[c][i][j]);
+            mvwaddch(area, // для какого окна
+                     y * size + i, x * size + j, // координаты вывода
+                     FIGURE[sybmol][i][j] | ((type_char == 1) ? A_STANDOUT : 0) // что выводим
+            );
         }
     }
+}
+
+int Gui::pressedKey(unsigned int key) {
+    bool depression = false;
+
+    while (!depression) {
+        switch (key) {
+            case 9: { // tab == code 9
+                // TODO if pressed key "Tab" then out of switch
+                depression = true;
+            }
+            case KEY_UP: {
+                if (play.i <= 0) break;
+                play.i--;
+            }
+            case KEY_LEFT: {
+                if (play.j <= 0) break;
+                play.j--;
+            }
+            case KEY_RIGHT: {
+                if (play.j >= 2) break;
+                play.j++;
+            }
+            case KEY_DOWN: {
+                if (play.i >= 2) break;
+                play.i++;
+            }
+            default:
+                break;
+        }
+    }
+
+    return 0;
 }
 

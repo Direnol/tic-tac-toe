@@ -14,7 +14,7 @@ void resize_term(int sig) {
 }
 
 int main() {
-    gui = new Gui(const_cast<char *>("192.168.1.80"), 5050);
+    gui = new Gui;
     signal(SIGWINCH, resize_term);
     gui->loop();
 

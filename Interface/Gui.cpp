@@ -2,7 +2,7 @@
 
 Gui::Gui() {
     InitAllWin();
-    status = 0;
+    status = 1;
 
     initMainWindow();
 }
@@ -36,18 +36,21 @@ void Gui::initChatOutWindow() {
     output_chat = derwin(chat_out_box, getmaxy(chat_out_box) - 2, getmaxx(chat_out_box) - 2, 1, 1);
 }
 
-Gui::~Gui() {
+Gui::~Gui()
+{
     DelWin();
 }
 
-void Gui::repaint() {
+void Gui::repaint()
+{
     clear();
     DelWin();
     InitAllWin();
     initMainWindow();
 }
 
-void Gui::DelWin() {
+void Gui::DelWin()
+{
     delwin(input_chat);
     delwin(area);
     delwin(game);
@@ -56,12 +59,12 @@ void Gui::DelWin() {
     endwin();
 
 }
-
-void Gui::InitAllWin() {
+void Gui::InitAllWin()
+{
     initscr();
     getmaxyx(stdscr, this->my, this->mx);
     noecho();
-    keypad(stdscr, TRUE);
+    keypad(stdscr, true);
     box(stdscr, 0, 0);
     this->gy = this->my / 2;
     this->gx = this->mx / 2;
@@ -69,12 +72,12 @@ void Gui::InitAllWin() {
     refresh();
 
 }
-
-void Gui::loop() {
+void Gui::loop()
+{
     int cur = 0;
     chtype c;
     while ((c = static_cast<chtype>(getch())) != KEY_F(10)) {
-        if (status != 0)
+        if (status)
             tic_tac_toe();
         else
             menu();
@@ -83,14 +86,18 @@ void Gui::loop() {
             continue;
         }
         if (cur == 0) {
+            touchwin(input_chat);
             keymap_chat(c);
+            wrefresh(input_chat);
         } else {
-            //
+            touchwin(area);
+            pressedKey(c);
+            wrefresh(area);
         }
     }
 }
-
-void Gui::menu() {
+void Gui::menu()
+{
 
 }
 
@@ -116,7 +123,7 @@ void Gui::tic_tac_toe() {
     }
 }
 
-void Gui::paint(int x, int y, int sybmol, int type_char = 0) {
+void Gui::paint(int x, int y, int sybmol, int type_char) {
     int size = 5;
     for (int i = 0; i < 5; ++i) {
         for (int j = 0; j < 5; ++j) {
@@ -129,14 +136,7 @@ void Gui::paint(int x, int y, int sybmol, int type_char = 0) {
 }
 
 int Gui::pressedKey(unsigned int key) {
-    bool depression = false;
-
-    while (!depression) {
         switch (key) {
-            case 9: { // tab == code 9
-                // TODO if pressed key "Tab" then out of switch
-                depression = true;
-            }
             case KEY_UP: {
                 if (play.i <= 0) break;
                 play.i--;
@@ -156,7 +156,6 @@ int Gui::pressedKey(unsigned int key) {
             default:
                 break;
         }
-    }
 
     return 0;
 }
@@ -175,7 +174,7 @@ void Gui::keymap_chat(chtype c) {
             if (chat.pos == 0) break;
             --chat.pos;
             if (x == 0) {
-                wmove(input_chat, y - 1, mx);
+                wmove(input_chat, y - 1, mx - 1);
             } else {
                 wmove(input_chat, y, x - 1);
             }
@@ -184,18 +183,21 @@ void Gui::keymap_chat(chtype c) {
         case (KEY_RIGHT): {
             if (chat.pos == chat.max) break;
             ++chat.pos;
-            if (x == mx) {
+            if (x == mx - 1) {
                 wmove(input_chat, y + 1, 0);
             } else {
                 wmove(input_chat, y, x + 1);
             }
             break;
         }
+        case KEY_UP:
+        case KEY_DOWN:break;
         case 127: {
             if (chat.pos == 0) break;
             --chat.pos;
+            --chat.max;
             if (x == 0) {
-                wmove(input_chat, y - 1, mx);
+                wmove(input_chat, y - 1, mx - 1);
             } else {
                 wmove(input_chat, y, x - 1);
             }

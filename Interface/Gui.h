@@ -107,8 +107,6 @@ private:
 
     void keymap_chat(chtype c);
 
-    ClientChat *tcp_chat;
-
 public:
     Gui();
 

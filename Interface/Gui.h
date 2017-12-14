@@ -83,6 +83,8 @@ private:
     Chat chat;
 
     WINDOW *input_chat;
+    WINDOW *output_chat;
+
     void DelWin();
 
     void InitAllWin();

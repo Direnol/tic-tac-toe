@@ -1,30 +1,26 @@
 #include "Gui.h"
 
-Gui::Gui()
-{
+Gui::Gui() {
     InitAllWin();
     status = 0;
 
     initMainWindow();
 }
 
-void Gui::initMainWindow()
-{
+void Gui::initMainWindow() {
     initGameWindow();
     initChatOutWindow();
     initChatInWindow();
 }
 
-void Gui::initGameWindow()
-{
+void Gui::initGameWindow() {
     game = newwin(1 + my - (gy / 2), gx, 1, 1);
     box(game, 0, 0);
     area = derwin(game, getmaxy(game) - 2, getmaxx(game) - 2, 1, 1);
     wrefresh(game);
 }
 
-void Gui::initChatInWindow()
-{
+void Gui::initChatInWindow() {
     int input_area = my - (gy * 2 - gy * 1 / 2);
     chat_in_box = newwin((input_area) < 7 ? input_area - 1 : input_area, mx - gx - 2, my - (gy - 3), gx + 1);
     box(chat_in_box, 0, 0);
@@ -33,28 +29,25 @@ void Gui::initChatInWindow()
 
 }
 
-void Gui::initChatOutWindow()
-{
+void Gui::initChatOutWindow() {
     chat_out_box = newwin(my - (gy - 2), mx - gx - 2, 1, gx + 1);
     box(chat_out_box, 0, 0);
     wrefresh(chat_out_box);
+    output_chat = derwin(chat_out_box, getmaxy(chat_out_box) - 2, getmaxx(chat_out_box) - 2, 1, 1);
 }
 
-Gui::~Gui()
-{
+Gui::~Gui() {
     DelWin();
 }
 
-void Gui::repaint()
-{
+void Gui::repaint() {
     clear();
     DelWin();
     InitAllWin();
     initMainWindow();
 }
 
-void Gui::DelWin()
-{
+void Gui::DelWin() {
     delwin(input_chat);
     delwin(area);
     delwin(game);
@@ -63,8 +56,8 @@ void Gui::DelWin()
     endwin();
 
 }
-void Gui::InitAllWin()
-{
+
+void Gui::InitAllWin() {
     initscr();
     getmaxyx(stdscr, this->my, this->mx);
     noecho();
@@ -76,12 +69,12 @@ void Gui::InitAllWin()
     refresh();
 
 }
-void Gui::loop()
-{
+
+void Gui::loop() {
     int cur = 0;
     chtype c;
     while ((c = static_cast<chtype>(getch())) != KEY_F(10)) {
-        if (status)
+        if (status != 0)
             tic_tac_toe();
         else
             menu();
@@ -96,14 +89,13 @@ void Gui::loop()
         }
     }
 }
-void Gui::menu()
-{
+
+void Gui::menu() {
 
 }
 
 // Отрисовка Х либо О на поле
-void Gui::tic_tac_toe()
-{
+void Gui::tic_tac_toe() {
     for (int i = 0; i < 3; ++i) {
         for (int j = 0; j < 3; ++j) {
             if (play.area[i][j] == 0) {
@@ -124,8 +116,7 @@ void Gui::tic_tac_toe()
     }
 }
 
-void Gui::paint(int x, int y, int sybmol, int type_char = 0)
-{
+void Gui::paint(int x, int y, int sybmol, int type_char = 0) {
     int size = 5;
     for (int i = 0; i < 5; ++i) {
         for (int j = 0; j < 5; ++j) {
@@ -169,8 +160,8 @@ int Gui::pressedKey(unsigned int key) {
 
     return 0;
 }
-void Gui::keymap_chat(chtype c)
-{
+
+void Gui::keymap_chat(chtype c) {
     if (c == '\n') {
         // TODO: send
 

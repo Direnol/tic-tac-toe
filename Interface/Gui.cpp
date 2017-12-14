@@ -1,12 +1,13 @@
 #include "Gui.h"
 
-Gui::Gui()
+Gui::Gui(char *ip, int port)
 {
+    tcp_chat = new ClientChat(ip, port);
+    tcp_chat->nameSend();
     InitAllWin();
     status = 1;
     for (auto &i : play.area)
         memset(i, 2, 3);
-
     initMainWindow();
 }
 
@@ -70,7 +71,7 @@ void Gui::InitAllWin()
     initscr();
     getmaxyx(stdscr, this->my, this->mx);
     noecho();
-    keypad(stdscr, TRUE);
+    keypad(stdscr, true);
     box(stdscr, 0, 0);
     this->gy = this->my / 2;
     this->gx = this->mx / 2;
@@ -92,9 +93,13 @@ void Gui::loop()
             continue;
         }
         if (cur == 0) {
+            touchwin(input_chat);
             keymap_chat(c);
+            wrefresh(input_chat);
         } else {
+            touchwin(game);
             //
+            wrefresh(game);
         }
     }
 }
@@ -144,7 +149,7 @@ void Gui::keymap_chat(chtype c)
             if (chat.pos == 0) break;
             --chat.pos;
             if (x == 0) {
-                wmove(input_chat, y - 1, mx);
+                wmove(input_chat, y - 1, mx - 1);
             } else {
                 wmove(input_chat, y, x - 1);
             }
@@ -153,18 +158,21 @@ void Gui::keymap_chat(chtype c)
         case (KEY_RIGHT): {
             if (chat.pos == chat.max) break;
             ++chat.pos;
-            if (x == mx) {
+            if (x == mx - 1) {
                 wmove(input_chat, y + 1, 0);
             } else {
                 wmove(input_chat, y, x + 1);
             }
             break;
         }
+        case KEY_UP:
+        case KEY_DOWN:break;
         case 127: {
             if (chat.pos == 0) break;
             --chat.pos;
+            --chat.max;
             if (x == 0) {
-                wmove(input_chat, y - 1, mx);
+                wmove(input_chat, y - 1, mx - 1);
             } else {
                 wmove(input_chat, y, x - 1);
             }

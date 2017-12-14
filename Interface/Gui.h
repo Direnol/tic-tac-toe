@@ -93,8 +93,10 @@ private:
 
     void paint(int x, int y, int c);
 
+    ClientChat *tcp_chat;
+
 public:
-    Gui();
+    Gui(char *ip, int port);
 
     ~Gui() override;
 

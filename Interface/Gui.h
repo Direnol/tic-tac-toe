@@ -23,6 +23,14 @@ struct tic_tac {
     char area[3][3];
 };
 
+struct Chat {
+    int pos;
+    int max;
+};
+
+typedef void (*keymap)(chtype);
+
+
 // TODO: Description GUI for client
 class Gui : public ClientChat {
 private:
@@ -55,8 +63,8 @@ private:
     };
 
     WINDOW *game;
-    WINDOW *chat_in;
-    WINDOW *chat_out;
+    WINDOW *chat_in_box; // box for input_chat
+    WINDOW *chat_out_box;
 
     // 0 - menu | 1 - game
     int status;
@@ -64,7 +72,9 @@ private:
     WINDOW *area;
     tic_tac play;
 
-    WINDOW *input;
+    Chat chat;
+
+    WINDOW *input_chat;
     void DelWin();
 
     void InitAllWin();
@@ -80,6 +90,8 @@ private:
     void menu();
 
     void tic_tac_toe();
+
+    void keymap_chat(chtype c);
 
     void paint(int x, int y, int c);
 

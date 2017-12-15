@@ -75,23 +75,26 @@ void Gui::InitAllWin()
 void Gui::loop()
 {
     int cur = 0;
-    chtype c;
-    while ((c = static_cast<chtype>(getch())) != KEY_F(10)) {
-        if (status)
-            tic_tac_toe();
-        else
-            menu();
+    chtype c = 0;
+    if (status) {
+        tic_tac_toe();
+    }
+    else {
+        menu();
+    }
+    while (c != KEY_F(10)) {
+        (cur ? touchwin(area) : touchwin(input_chat));
+        c = static_cast<chtype>(getch());
         if (c == '\t') {
             cur ^= 1;
             continue;
         }
         if (cur == 0) {
-            touchwin(input_chat);
             keymap_chat(c);
             wrefresh(input_chat);
         } else {
-            touchwin(area);
             pressedKey(c);
+            tic_tac_toe();
             wrefresh(area);
         }
     }
@@ -108,15 +111,18 @@ void Gui::tic_tac_toe() {
             if (play.area[i][j] == 0) {
                 if (play.i == i && play.j == j)
                     paint(j + 2, i, 0, 1);
-                paint(j + 2, i, 0);
+                else
+                    paint(j + 2, i, 0);
             } else if (play.area[i][j] == 1) {
                 if (play.i == i && play.j == j)
                     paint(j + 2, i, 1, 1);
-                paint(j + 2, i, 1);
+                else
+                    paint(j + 2, i, 1);
             } else {
                 if (play.i == i && play.j == j)
                     paint(j + 2, i, 2, 1);
-                paint(j + 2, i, 2);
+                else
+                    paint(j + 2, i, 2);
             }
             wrefresh(area);
         }
@@ -137,21 +143,29 @@ void Gui::paint(int x, int y, int sybmol, int type_char) {
 
 int Gui::pressedKey(unsigned int key) {
         switch (key) {
+            case '\n': {
+                // TODO: send game_flag and struct
+                break;
+            }
             case KEY_UP: {
                 if (play.i <= 0) break;
                 play.i--;
+                break;
             }
             case KEY_LEFT: {
                 if (play.j <= 0) break;
                 play.j--;
+                break;
             }
             case KEY_RIGHT: {
                 if (play.j >= 2) break;
                 play.j++;
+                break;
             }
             case KEY_DOWN: {
                 if (play.i >= 2) break;
                 play.i++;
+                break;
             }
             default:
                 break;

@@ -10,8 +10,8 @@ set(SOURCE_FILES_CLIENT
 set(SOURCE_FILES_SERVER
         Server/server.cpp Server/ServerChat.cpp Server/ServerChat.h Headers/Common.h)
 
-add_executable(${PROJECT_NAME}_server ${SOURCE_FILES_SERVER})
-target_link_libraries(${PROJECT_NAME}_server pthread ncurses)
+add_executable(server ${SOURCE_FILES_SERVER})
+target_link_libraries(server pthread ncurses)
 
-add_executable(${PROJECT_NAME}_client ${SOURCE_FILES_CLIENT})
-target_link_libraries(${PROJECT_NAME}_client pthread ncurses)
+add_executable(client ${SOURCE_FILES_CLIENT})
+target_link_libraries(client pthread ncurses)

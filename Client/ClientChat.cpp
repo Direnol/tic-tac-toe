@@ -42,7 +42,7 @@ void ClientChat::nameSet()
     cin >> player_name;
 }
 
-int ClientChat::messageSend()
+int ClientChat::messageSend(string &message)
 {
     msg pmsg = {};
 
@@ -72,15 +72,6 @@ int ClientChat::messageRecv()
     return 0;
 }
 
-void ClientChat::start()
-{
-
-    thread th[2];
-
-    th[0] = thread(&ClientChat::messageSend, this);
-    th[1] = thread(&ClientChat::messageRecv, this);
-    for (auto &i : th) i.join();
-}
 
 COMMANDS ClientChat::get_command(string message, msg pmsg)
 {
@@ -95,6 +86,11 @@ COMMANDS ClientChat::get_command(string message, msg pmsg)
             // TODO: обработчик клиентских команд
         }
     }
+}
+
+bool ClientChat::checkWin(int &who)
+{
+    return false;
 }
 
 ClientChat::ClientChat() = default;

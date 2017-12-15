@@ -29,6 +29,8 @@ public:
 
     string get_date();
 
+    bool getWinner(tic_tac *game, int &who);
+
 };
 
 #endif //TIC_TAC_TOE_ServerChat_H

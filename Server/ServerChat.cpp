@@ -41,6 +41,8 @@ int ServerChat::listen_connect(int player)
     do {
         res = static_cast<int>(recv(player, ptr, BUFFER_SIZE, 0));
         if (res <= 0) {
+            players.erase(string(pch));
+            sockets.erase(player);
             close(player);
             return 0;
         }
@@ -149,4 +151,8 @@ string ServerChat::get_time() {
     time << tmp_time->tm_hour << ':' << tmp_time->tm_min << ':' << tmp_time->tm_sec;
     time << " ";
     return time.str();
+}
+bool ServerChat::getWinner(tic_tac *game, int &who)
+{
+    return false;
 }

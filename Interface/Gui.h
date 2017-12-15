@@ -20,26 +20,6 @@
 
 void resize_term(int sig);
 
-struct tic_tac {
-    char area[3][3]{};
-    int i; // coords game area
-    int j; //
-    int figure;
-
-    tic_tac()
-    {
-        i = j = 0;
-        figure = 2;
-        for (auto &i : area)
-            memset(i, 2, 3);
-    }
-};
-
-struct Chat {
-    int pos;
-    int max;
-};
-
 // TODO: Description GUI for client
 class Gui : public ClientChat {
 private:
@@ -110,6 +90,12 @@ private:
 
     void keymap_chat(chtype c);
 
+    thread tid[2];
+
+    void SendMessage();
+
+    void RecvMessage();
+
 public:
     Gui();
 
@@ -120,6 +106,8 @@ public:
     void repaint();
 
     void loop();
+
+    void start_chat();
 
 };
 

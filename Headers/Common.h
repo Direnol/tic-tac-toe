@@ -23,6 +23,29 @@
 
 using namespace std;
 
+struct tic_tac {
+    char area[3][3];
+    int i; // coords game area
+    int j; //
+    int figure;
+    int winner;
+
+    tic_tac()
+    {
+        i = j = 0;
+        figure = 2;
+        winner = -1;
+        for (auto &i : area)
+            memset(i, 2, 3);
+    }
+};
+
+struct Chat {
+    int pos;
+    int max;
+};
+
+
 struct msg {
     int code;
     char message[60];

@@ -20,13 +20,14 @@ public:
 
     int nameSend();
 
-    int messageSend();
+    int messageSend(string &message);
 
     int messageRecv();
 
-    void start();
 
     COMMANDS get_command(string message, msg pmsg);
+
+    bool checkWin(int &who);
 };
 
 #endif //TIC_TAC_TOE_CLIENTCHAT_H

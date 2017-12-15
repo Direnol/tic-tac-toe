@@ -45,6 +45,7 @@ void Gui::initChatOutWindow()
 Gui::~Gui()
 {
     DelWin();
+//    for (auto &i : tid) i.join();
 }
 
 void Gui::repaint()
@@ -81,6 +82,9 @@ void Gui::InitAllWin()
 void Gui::loop()
 {
     chtype c = 0;
+
+//    start_chat();
+
     if (status) {
         tic_tac_toe();
     } else {
@@ -235,8 +239,24 @@ void Gui::keymap_chat(chtype c)
 }
 Gui::Gui(char *ip, uint16_t port) : ClientChat(ip, port)
 {
+//    nameSend();
     InitAllWin();
     status = 1;
     cur = 0;
     initMainWindow();
+}
+
+void Gui::start_chat()
+{
+    tid[0] = thread(&Gui::SendMessage, this);
+    tid[1] = thread(&Gui::RecvMessage, this);
+}
+
+void Gui::SendMessage()
+{
+
+}
+void Gui::RecvMessage()
+{
+
 }

@@ -3,7 +3,7 @@
 Gui::Gui() {
     InitAllWin();
     status = 1;
-
+    cur = 0;
     initMainWindow();
 }
 
@@ -34,6 +34,7 @@ void Gui::initChatOutWindow() {
     box(chat_out_box, 0, 0);
     wrefresh(chat_out_box);
     output_chat = derwin(chat_out_box, getmaxy(chat_out_box) - 2, getmaxx(chat_out_box) - 2, 1, 1);
+    scrollok(output_chat, true);
 }
 
 Gui::~Gui()
@@ -74,7 +75,6 @@ void Gui::InitAllWin()
 }
 void Gui::loop()
 {
-    int cur = 0;
     chtype c = 0;
     if (status) {
         tic_tac_toe();
@@ -225,5 +225,13 @@ void Gui::keymap_chat(chtype c) {
             waddch(input_chat, c);
         }
     }
+}
+void Gui::print_msg(string &msg)
+{
+    int x =  0, y  = 0, mx = 0, my = 0;
+    getmaxyx(output_chat, my, mx);
+    getyx(output_chat, y, x);
+    if (y == my - 1) scroll(output_chat);
+    waddstr(output_chat, msg.data());
 }
 

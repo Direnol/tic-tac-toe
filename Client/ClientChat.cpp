@@ -2,6 +2,7 @@
 #include "ClientChat.h"
 
 ClientChat::ClientChat(const char *ip, int port) {
+    gui = nullptr;
     this->ip = ip;
     this->port = port;
 
@@ -17,6 +18,8 @@ ClientChat::ClientChat(const char *ip, int port) {
 
 ClientChat::~ClientChat() {
     close(sock);
+    if (gui) delete gui;
+    gui = nullptr;
 }
 
 int ClientChat::nameSend() {
@@ -31,7 +34,7 @@ int ClientChat::nameSend() {
         );
         recv(sock, buf, BUFFER_SIZE, 0);
     } while (strcmp(buf, "OK") != 0);
-
+    gui = new Gui;
     return 0;
 }
 

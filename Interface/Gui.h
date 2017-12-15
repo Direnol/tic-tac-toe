@@ -85,6 +85,7 @@ private:
     WINDOW *input_chat;
     WINDOW *output_chat;
 
+    int cur;
     void DelWin();
 
     void InitAllWin();
@@ -115,6 +116,8 @@ public:
     void repaint();
 
     void loop();
+
+    void print_msg(string &msg);
 };
 
 #endif //TIC_TAC_TOE_GUI_H

@@ -6,6 +6,7 @@
 #include <form.h>
 #include <sys/ioctl.h>
 #include <csignal>
+#include <string>
 
 /* TODO: Description ncurses text-style
     A_NORMAL             //- обычный режим
@@ -25,7 +26,8 @@ struct tic_tac {
     int j; //
     int figure;
 
-    tic_tac() {
+    tic_tac()
+    {
         i = j = 0;
         figure = 2;
         for (auto &i : area)
@@ -37,7 +39,6 @@ struct Chat {
     int pos;
     int max;
 };
-
 
 // TODO: Description GUI for client
 class Gui : public ClientChat {
@@ -86,6 +87,7 @@ private:
     WINDOW *output_chat;
 
     int cur;
+
     void DelWin();
 
     void InitAllWin();
@@ -111,13 +113,14 @@ private:
 public:
     Gui();
 
+    Gui(char *ip, uint16_t port);
+
     ~Gui() override;
 
     void repaint();
 
     void loop();
 
-    void print_msg(string &msg);
 };
 
 #endif //TIC_TAC_TOE_GUI_H

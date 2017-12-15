@@ -3,7 +3,8 @@
 
 Gui *gui;
 
-void resize_term(int sig) {
+void resize_term(int sig)
+{
     winsize w = {};
     w.ws_col = 80;
     w.ws_row = 25;
@@ -13,11 +14,12 @@ void resize_term(int sig) {
     signal(SIGWINCH, resize_term);
 }
 
-int main() {
+int main()
+{
     gui = new Gui;
     signal(SIGWINCH, resize_term);
     gui->loop();
 
-    delete(gui);
+    delete (gui);
     return 0;
 }

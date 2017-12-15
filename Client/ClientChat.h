@@ -1,15 +1,13 @@
 #ifndef TIC_TAC_TOE_CLIENTCHAT_H
 #define TIC_TAC_TOE_CLIENTCHAT_H
 
-#include "../Interface/Gui.h"
 #include "../Headers/Common.h"
 
 class ClientChat {
-private:
+protected:
     int sock;
     string ip;
     int port;
-    Gui *gui;
     string player_name;
 public:
     ClientChat();
@@ -30,6 +28,5 @@ public:
 
     COMMANDS get_command(string message, msg pmsg);
 };
-
 
 #endif //TIC_TAC_TOE_CLIENTCHAT_H

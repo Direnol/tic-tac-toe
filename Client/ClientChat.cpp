@@ -1,8 +1,8 @@
 #include <cstring>
 #include "ClientChat.h"
 
-ClientChat::ClientChat(const char *ip, int port) {
-    gui = nullptr;
+ClientChat::ClientChat(const char *ip, int port)
+{
     this->ip = ip;
     this->port = port;
 
@@ -16,13 +16,13 @@ ClientChat::ClientChat(const char *ip, int port) {
 
 }
 
-ClientChat::~ClientChat() {
+ClientChat::~ClientChat()
+{
     close(sock);
-    if (gui) delete gui;
-    gui = nullptr;
 }
 
-int ClientChat::nameSend() {
+int ClientChat::nameSend()
+{
     char buf[BUFFER_SIZE];
 
     do {
@@ -34,15 +34,16 @@ int ClientChat::nameSend() {
         );
         recv(sock, buf, BUFFER_SIZE, 0);
     } while (strcmp(buf, "OK") != 0);
-    gui = new Gui;
     return 0;
 }
 
-void ClientChat::nameSet() {
+void ClientChat::nameSet()
+{
     cin >> player_name;
 }
 
-int ClientChat::messageSend() {
+int ClientChat::messageSend()
+{
     msg pmsg = {};
 
     string tmp;
@@ -60,7 +61,8 @@ int ClientChat::messageSend() {
     return 0;
 }
 
-int ClientChat::messageRecv() {
+int ClientChat::messageRecv()
+{
     msg pmsg = {};
     while (true) {
         if (recv(sock, &pmsg, sizeof(msg), 0) <= 0) break;
@@ -70,7 +72,8 @@ int ClientChat::messageRecv() {
     return 0;
 }
 
-void ClientChat::start() {
+void ClientChat::start()
+{
 
     thread th[2];
 
@@ -79,7 +82,8 @@ void ClientChat::start() {
     for (auto &i : th) i.join();
 }
 
-COMMANDS ClientChat::get_command(string message, msg pmsg) {
+COMMANDS ClientChat::get_command(string message, msg pmsg)
+{
     if (message.size() > 2) {
         if (message.find("/sg", 0) != string::npos) {
             return OPTIONS;

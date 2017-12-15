@@ -1,26 +1,30 @@
 #include "Gui.h"
 
-Gui::Gui() {
+Gui::Gui()
+{
     InitAllWin();
     status = 1;
     cur = 0;
     initMainWindow();
 }
 
-void Gui::initMainWindow() {
+void Gui::initMainWindow()
+{
     initGameWindow();
     initChatOutWindow();
     initChatInWindow();
 }
 
-void Gui::initGameWindow() {
+void Gui::initGameWindow()
+{
     game = newwin(1 + my - (gy / 2), gx, 1, 1);
     box(game, 0, 0);
     area = derwin(game, getmaxy(game) - 2, getmaxx(game) - 2, 1, 1);
     wrefresh(game);
 }
 
-void Gui::initChatInWindow() {
+void Gui::initChatInWindow()
+{
     int input_area = my - (gy * 2 - gy * 1 / 2);
     chat_in_box = newwin((input_area) < 7 ? input_area - 1 : input_area, mx - gx - 2, my - (gy - 3), gx + 1);
     box(chat_in_box, 0, 0);
@@ -29,7 +33,8 @@ void Gui::initChatInWindow() {
 
 }
 
-void Gui::initChatOutWindow() {
+void Gui::initChatOutWindow()
+{
     chat_out_box = newwin(my - (gy - 2), mx - gx - 2, 1, gx + 1);
     box(chat_out_box, 0, 0);
     wrefresh(chat_out_box);
@@ -78,8 +83,7 @@ void Gui::loop()
     chtype c = 0;
     if (status) {
         tic_tac_toe();
-    }
-    else {
+    } else {
         menu();
     }
     while (c != KEY_F(10)) {
@@ -105,7 +109,8 @@ void Gui::menu()
 }
 
 // Отрисовка Х либо О на поле
-void Gui::tic_tac_toe() {
+void Gui::tic_tac_toe()
+{
     for (int i = 0; i < 3; ++i) {
         for (int j = 0; j < 3; ++j) {
             if (play.area[i][j] == 0) {
@@ -129,7 +134,8 @@ void Gui::tic_tac_toe() {
     }
 }
 
-void Gui::paint(int x, int y, int sybmol, int type_char) {
+void Gui::paint(int x, int y, int sybmol, int type_char)
+{
     int size = 5;
     for (int i = 0; i < 5; ++i) {
         for (int j = 0; j < 5; ++j) {
@@ -141,40 +147,41 @@ void Gui::paint(int x, int y, int sybmol, int type_char) {
     }
 }
 
-int Gui::pressedKey(unsigned int key) {
-        switch (key) {
-            case '\n': {
-                // TODO: send game_flag and struct
-                break;
-            }
-            case KEY_UP: {
-                if (play.i <= 0) break;
-                play.i--;
-                break;
-            }
-            case KEY_LEFT: {
-                if (play.j <= 0) break;
-                play.j--;
-                break;
-            }
-            case KEY_RIGHT: {
-                if (play.j >= 2) break;
-                play.j++;
-                break;
-            }
-            case KEY_DOWN: {
-                if (play.i >= 2) break;
-                play.i++;
-                break;
-            }
-            default:
-                break;
+int Gui::pressedKey(unsigned int key)
+{
+    switch (key) {
+        case '\n': {
+            // TODO: send game_flag and struct
+            break;
         }
+        case KEY_UP: {
+            if (play.i <= 0) break;
+            play.i--;
+            break;
+        }
+        case KEY_LEFT: {
+            if (play.j <= 0) break;
+            play.j--;
+            break;
+        }
+        case KEY_RIGHT: {
+            if (play.j >= 2) break;
+            play.j++;
+            break;
+        }
+        case KEY_DOWN: {
+            if (play.i >= 2) break;
+            play.i++;
+            break;
+        }
+        default:break;
+    }
 
     return 0;
 }
 
-void Gui::keymap_chat(chtype c) {
+void Gui::keymap_chat(chtype c)
+{
     if (c == '\n') {
         // TODO: send
 
@@ -226,12 +233,10 @@ void Gui::keymap_chat(chtype c) {
         }
     }
 }
-void Gui::print_msg(string &msg)
+Gui::Gui(char *ip, uint16_t port) : ClientChat(ip, port)
 {
-    int x =  0, y  = 0, mx = 0, my = 0;
-    getmaxyx(output_chat, my, mx);
-    getyx(output_chat, y, x);
-    if (y == my - 1) scroll(output_chat);
-    waddstr(output_chat, msg.data());
+    InitAllWin();
+    status = 1;
+    cur = 0;
+    initMainWindow();
 }
-

@@ -16,7 +16,7 @@
 #include <sys/socket.h>
 #include <iostream>
 #include <ctime>
-
+#include <string.h>
 
 #define BUFFER_SIZE 128
 #define PLAYER_NAME_SIZE 10
@@ -37,7 +37,7 @@ enum ERROR_CHAT {
     ERROR_CONNECT
 };
 
-enum COMMANDS{
+enum COMMANDS {
     ALL,
     GAME,
     OPTIONS

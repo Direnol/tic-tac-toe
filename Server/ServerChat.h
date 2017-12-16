@@ -11,6 +11,9 @@ private:
     // <name, <sock, status> >
     map<string, pair<int, int> > players;
 
+    //queue for game
+    deque<int> qgame;
+
     ofstream log;
     bool work;
     vector<thread> threads;

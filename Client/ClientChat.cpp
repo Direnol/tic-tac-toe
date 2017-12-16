@@ -46,12 +46,12 @@ void ClientChat::nameSet()
 int ClientChat::messageSend(char *message, size_t n)
 {
     msg pmsg = {};
-
-    pmsg.code = get_command(message, pmsg);
+    string _msg(message);
+    pmsg.code = get_command(_msg, pmsg);
 
     if (n > 50) return 1;
 
-    strcpy(pmsg.message, message);
+    strcpy(pmsg.message, _msg.data());
 
     if (send(sock, &pmsg, sizeof(msg), 0) <= 0) return EXIT_FAILURE;
     return EXIT_SUCCESS;
@@ -65,10 +65,11 @@ void ClientChat::messageRecv(msg *pmsg)
 
 }
 
-COMMANDS ClientChat::get_command(string message, msg pmsg)
+COMMANDS ClientChat::get_command(string &message, msg pmsg)
 {
     if (message.size() > 2) {
         if (message.find("/sg", 0) != string::npos) {
+            message.erase(0, 3);
             return OPTIONS;
         }
         if (message.find("/s", 0) != string::npos) {

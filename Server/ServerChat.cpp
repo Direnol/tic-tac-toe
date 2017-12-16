@@ -29,7 +29,8 @@ ServerChat::ServerChat(const char *ip, uint16_t port)
 ServerChat::~ServerChat()
 {
     log.close();
-    close(sock);
+    if (sock != -1) close(sock);
+    sock = -1;
 }
 
 int ServerChat::listen_connect(int player)
@@ -53,17 +54,14 @@ int ServerChat::listen_connect(int player)
         send(player, "NO", strlen("NO"), 0);
     } while (true);
 
-    dlock();
-    log << pch << " has been connected" << endl;
-    dunlock();
     string name(pch);
+    dlock();
+    logging(name + " has been conected");
+    dunlock();
     while (work) {
         res = recv(player, ptr, BUFFER_SIZE, 0);
         if (res <= 0) {
-            players.erase(string(pch));
-            sockets.erase(player);
-            close(player);
-            return 1;
+            goto end;
         }
         switch (pmsg->code) {
             case (ALL): {
@@ -84,7 +82,17 @@ int ServerChat::listen_connect(int player)
                 break;
             }
             case (OPTIONS): {
-
+                if (strcmp("out", pmsg->message) == 0) {
+                    goto end;
+                } else if (strcmp("kill", pmsg->message) == 0) {
+                    work = false;
+                    if (sock != -1) close(sock);
+                    sock = -1;
+                    dlock();
+                    logging("Server off");
+                    dunlock();
+                    // TODO: off server
+                }
                 break;
             }
             default: {
@@ -93,9 +101,14 @@ int ServerChat::listen_connect(int player)
             }
         }
     }
-
+    end:
     delete (char *)ptr;
+    players.erase(name);
+    sockets.erase(player);
     close(player);
+    dlock();
+    logging(name + " has been disconect");
+    dunlock();
     return 0;
 }
 
@@ -136,7 +149,7 @@ void ServerChat::dunlock()
 }
 void ServerChat::logging(string s)
 {
-    log << s << endl;
+    log << get_time() << ":" << s << endl;
 }
 
 string ServerChat::get_time() {
@@ -151,6 +164,7 @@ string ServerChat::get_time() {
     time << " ";
     return time.str();
 }
+
 bool ServerChat::getWinner(tic_tac *game, int &who)
 {
     return false;

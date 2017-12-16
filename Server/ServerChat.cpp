@@ -78,7 +78,8 @@ int ServerChat::listen_connect(int player)
                 break;
             }
             case (GAME) : {
-
+                /*TODO handler for game:
+                 * create, list, connect*/
                 break;
             }
             case (OPTIONS): {

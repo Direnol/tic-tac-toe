@@ -99,6 +99,11 @@ void Gui::loop()
             cur ^= 1;
             continue;
         }
+
+        /*TODO key handler for F1, F2, F3
+         * need command: /sgCOMMAND
+         */
+
         if (cur == 0) {
             keymap_chat(c);
             wrefresh(input_chat);

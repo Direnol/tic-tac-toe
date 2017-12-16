@@ -82,6 +82,10 @@ private:
 
     void initChatOutWindow();
 
+    /* TODO: print menu
+     * F1. create game
+     * F2. list of game
+     * F3. connect*/
     void menu();
 
     void tic_tac_toe();

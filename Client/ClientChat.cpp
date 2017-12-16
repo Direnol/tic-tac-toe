@@ -18,7 +18,8 @@ ClientChat::ClientChat(const char *ip, int port)
 
 ClientChat::~ClientChat()
 {
-    close(sock);
+    if (sock != -1) close(sock);
+    sock = -1;
 }
 
 int ClientChat::nameSend()
@@ -42,36 +43,27 @@ void ClientChat::nameSet()
     cin >> player_name;
 }
 
-int ClientChat::messageSend(string &message)
+int ClientChat::messageSend(char *message, size_t n)
 {
     msg pmsg = {};
 
-    string tmp;
-    while (true) {
-        getline(cin, tmp);
+    pmsg.code = get_command(message, pmsg);
 
-        pmsg.code = get_command(tmp, pmsg);
+    if (n > 50) return 1;
 
-        if (tmp.size() > 50) return 1;
+    strcpy(pmsg.message, message);
 
-        strcpy(pmsg.message, tmp.c_str());
-
-        if (send(sock, &pmsg, sizeof(msg), 0) <= 0) break;
-    }
-    return 0;
+    if (send(sock, &pmsg, sizeof(msg), 0) <= 0) return EXIT_FAILURE;
+    return EXIT_SUCCESS;
 }
 
-int ClientChat::messageRecv()
+void ClientChat::messageRecv(msg *pmsg)
 {
-    msg pmsg = {};
-    while (true) {
-        if (recv(sock, &pmsg, sizeof(msg), 0) <= 0) break;
-
-        cout << pmsg.code << ' ' << pmsg.message << endl;
+    if (recv(sock, pmsg, sizeof(msg), 0) <= 0) {
+        pmsg->code = -1;
     }
-    return 0;
-}
 
+}
 
 COMMANDS ClientChat::get_command(string message, msg pmsg)
 {
@@ -86,6 +78,7 @@ COMMANDS ClientChat::get_command(string message, msg pmsg)
             // TODO: обработчик клиентских команд
         }
     }
+    return ALL;
 }
 
 bool ClientChat::checkWin(int &who)

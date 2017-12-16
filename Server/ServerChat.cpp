@@ -41,8 +41,6 @@ int ServerChat::listen_connect(int player)
     do {
         res = static_cast<int>(recv(player, ptr, BUFFER_SIZE, 0));
         if (res <= 0) {
-            players.erase(string(pch));
-            sockets.erase(player);
             close(player);
             return 0;
         }
@@ -62,6 +60,8 @@ int ServerChat::listen_connect(int player)
     while (work) {
         res = recv(player, ptr, BUFFER_SIZE, 0);
         if (res <= 0) {
+            players.erase(string(pch));
+            sockets.erase(player);
             close(player);
             return 1;
         }
@@ -115,7 +115,6 @@ int ServerChat::server()
         this->dlock();
         log << "New connect [" << nameconnect << "] ";
         log << get_time() << __DATE__ << "\n";
-
         this->dunlock();
         threads.emplace_back(thread(&ServerChat::listen_connect, this, new_fd));
     }

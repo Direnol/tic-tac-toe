@@ -20,9 +20,9 @@ public:
 
     int nameSend();
 
-    int messageSend(string &message);
+    int messageSend(char *message, size_t n);
 
-    int messageRecv();
+    void messageRecv(msg *pmsg);
 
 
     COMMANDS get_command(string message, msg pmsg);

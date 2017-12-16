@@ -68,6 +68,8 @@ private:
 
     int cur;
 
+    bool work;
+
     void DelWin();
 
     void InitAllWin();
@@ -90,9 +92,11 @@ private:
 
     void keymap_chat(chtype c);
 
-    thread tid[2];
+    thread tid;
 
     void SendMessage();
+
+    size_t rtimr(char *s);
 
     void RecvMessage();
 

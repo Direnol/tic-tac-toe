@@ -45,7 +45,9 @@ void Gui::initChatOutWindow()
 Gui::~Gui()
 {
     DelWin();
-//    for (auto &i : tid) i.join();
+    if (sock != -1) close(sock);
+    sock = -1;
+    tid.join();
 }
 
 void Gui::repaint()
@@ -83,7 +85,7 @@ void Gui::loop()
 {
     chtype c = 0;
 
-//    start_chat();
+    start_chat();
 
     if (status) {
         tic_tac_toe();
@@ -187,8 +189,7 @@ int Gui::pressedKey(unsigned int key)
 void Gui::keymap_chat(chtype c)
 {
     if (c == '\n') {
-        // TODO: send
-
+        this->SendMessage();
         return;
     }
     int mx, my, x, y;
@@ -239,7 +240,7 @@ void Gui::keymap_chat(chtype c)
 }
 Gui::Gui(char *ip, uint16_t port) : ClientChat(ip, port)
 {
-//    nameSend();
+    nameSend();
     InitAllWin();
     status = 1;
     cur = 0;
@@ -248,15 +249,43 @@ Gui::Gui(char *ip, uint16_t port) : ClientChat(ip, port)
 
 void Gui::start_chat()
 {
-    tid[0] = thread(&Gui::SendMessage, this);
-    tid[1] = thread(&Gui::RecvMessage, this);
+    tid = thread(&Gui::RecvMessage, this);
 }
 
 void Gui::SendMessage()
 {
-
+    char message[BUFFER_SIZE];
+    mvwinstr(input_chat, 0, 0, message);
+    size_t n = rtimr(message);
+    messageSend(message, n);
+    wclear(input_chat);
+    chat.pos = chat.max = 0;
 }
+
 void Gui::RecvMessage()
 {
-
+    msg pmsg{};
+    int mx, my, x, y;
+    getmaxyx(output_chat, my, mx);
+    while (work) {
+        messageRecv(&pmsg);
+        if (pmsg.code < 0) {
+            exit(EXIT_FAILURE);
+        }
+        waddstr(output_chat, pmsg.message);
+        getyx(output_chat, y, x);
+        if (y == my) {
+            wscrl(output_chat, 3);
+            wmove(output_chat, y - 2, 0);
+        } else {
+            wmove(output_chat, y + 1, 0);
+        }
+        wrefresh(output_chat);
+    }
+}
+size_t Gui::rtimr(char *s)
+{
+    size_t n = strlen(s);
+    for (size_t i = n - 1; i >= 0 && s[i] == ' '; --i, --n) s[i] = '\0';
+    return n;
 }

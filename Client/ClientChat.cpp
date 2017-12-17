@@ -34,7 +34,7 @@ int ClientChat::nameSend()
              player_name.size(), 0
         );
         recv(sock, buf, BUFFER_SIZE, 0);
-    } while (strcmp(buf, "OK") != 0);
+    } while (strncmp(buf, "OK", 2) != 0);
     return 0;
 }
 
@@ -72,11 +72,9 @@ COMMANDS ClientChat::get_command(string &message, msg pmsg)
             message.erase(0, 3);
             return OPTIONS;
         }
-        if (message.find("/s", 0) != string::npos) {
-
-        }
-        if (false) {
-            // TODO: обработчик клиентских команд
+        if (message.find("/g", 0) != string::npos) {
+            message.erase(0, 2);
+            return GAME;
         }
     }
     return ALL;

@@ -29,28 +29,6 @@ private:
         gy; // GameWindow y
 
 
-    const chtype FIGURE[3][5][5] = {
-        {{'-', '-', '-', '-', '-'},
-         {'|', '\\', ' ', '/', '|'},
-         {'|', ' ', 'x', ' ', '|'},
-         {'|', '/', ' ', '\\', '|'},
-         {'-', '-', '-', '-', '-'}
-
-        },
-        {{'-', '-', '-', '-', '-'},
-         {'|', ' ', '-', ' ', '|'},
-         {'|', '(', 'o', ')', '|'},
-         {'|', ' ', '-', ' ', '|'},
-         {'-', '-', '-', '-', '-'}
-        },
-        {{'-', '-', '-', '-', '-'},
-         {'|', ' ', ' ', ' ', '|'},
-         {'|', ' ', ' ', ' ', '|'},
-         {'|', ' ', ' ', ' ', '|'},
-         {'-', '-', '-', '-', '-'}
-        }
-    };
-
     WINDOW *game;
     WINDOW *chat_in_box; // box for input_chat
     WINDOW *chat_out_box;
@@ -81,9 +59,9 @@ private:
     void initChatOutWindow();
 
     /* TODO: print menu
-     * F1. create game
-     * F2. list of game
-     * F3. connect*/
+     * F2. create game
+     * F3. list of game
+     * F4. connect*/
     void menu();
 
     void tic_tac_toe();
@@ -96,13 +74,21 @@ private:
 
     thread tid;
 
+    bool work;
+
     void SendMessage();
 
     size_t rtimr(char *s);
 
     void RecvMessage();
 
+    void createGame();
+
+    void connectToGame();
+
+
 public:
+
     Gui();
 
     Gui(char *ip, uint16_t port);
@@ -115,6 +101,7 @@ public:
 
     void start_chat();
 
+    void serverList();
 };
 
 #endif //TIC_TAC_TOE_GUI_H

@@ -1,7 +1,6 @@
 #include <sstream>
 #include "ServerChat.h"
 
-using namespace std;
 ServerChat::ServerChat(const char *ip, uint16_t port)
 {
     if (ip == nullptr) throw ERROR_IP;
@@ -28,9 +27,15 @@ ServerChat::ServerChat(const char *ip, uint16_t port)
 
 ServerChat::~ServerChat()
 {
-    log.close();
     if (sock != -1) close(sock);
     sock = -1;
+    for (auto &it : sockets) {
+        sockets.erase(it.first);
+        close(it.first);
+    }
+    for (auto &it : threads) it.join();
+    logging("Server is closed");
+    log.close();
 }
 
 int ServerChat::listen_connect(int player)
@@ -45,8 +50,9 @@ int ServerChat::listen_connect(int player)
             close(player);
             return 0;
         }
+        pch[res] = '\0';
         if (players.find(string(pch)) == players.end()) {
-            players.insert(make_pair(string(pch), make_pair(player, ALL)));
+            players.insert(make_pair(string(pch), make_pair(player, -1)));
             this->sockets.insert(make_pair(player, string(pch)));
             send(player, "OK", strlen("OK"), 0);
             break;
@@ -55,9 +61,8 @@ int ServerChat::listen_connect(int player)
     } while (true);
 
     string name(pch);
-    dlock();
     logging(name + " has been conected");
-    dunlock();
+    tic_tac *game_struct = reinterpret_cast<tic_tac *>(pmsg->message);
     while (work) {
         res = recv(player, ptr, BUFFER_SIZE, 0);
         if (res <= 0) {
@@ -68,9 +73,7 @@ int ServerChat::listen_connect(int player)
                 string tmp(name);
                 tmp += ":" + string(pmsg->message);
                 strcpy(pmsg->message, tmp.c_str());
-                dlock();
                 logging(tmp);
-                dunlock();
                 for (auto &it : players) {
                     if (it.second.first == player) continue;
                     send(it.second.first, pmsg, sizeof(msg), 0);
@@ -78,8 +81,45 @@ int ServerChat::listen_connect(int player)
                 break;
             }
             case (GAME) : {
-                /*TODO handler for game:
-                 * create, list, connect*/
+                if (strcmp("create", pmsg->message) == 0) {
+                    string buffer = name + " has created game!";
+                    qgame.emplace_back(player);
+                    pmsg->code = ALL;
+                    logging(buffer);
+                    strcpy(pmsg->message, buffer.data());
+
+                    for (auto &it : players) {
+                        // if (it.second.first == player) continue;
+                        send(it.second.first, pmsg, sizeof(msg), 0);
+                    }
+
+                    pmsg->code = INIT;
+                    int *init = reinterpret_cast<int *>(pmsg->message);
+                    init[0] = 0;
+                    init[1] = 0;
+                    send(player, pmsg, sizeof(msg), 0);
+
+                    logging(name + " created game");
+                } else if (strcmp("connect", pmsg->message) == 0) {
+                    int alien_fd = qgame.front(); // get alien fd
+                    qgame.pop_front(); // delete from queue game
+                    string alien_name = sockets[alien_fd]; // get alien's name
+                    players[name].second = alien_fd; // say, that i have alien alien_fd
+                    players[alien_name].second = player; // say, that alien has alient me
+                    pmsg->code = INIT;
+                    int *init = reinterpret_cast<int *>(pmsg->message);
+                    init[0] = 1; // figure
+                    init[1] = 0; // first step
+                    send(player, pmsg, sizeof(msg), 0);
+                    logging(name + " vs " + alien_name);
+
+
+                    //start game
+                    // send to me
+                    // send to alien
+
+                }
+
                 break;
             }
             case (OPTIONS): {
@@ -89,9 +129,7 @@ int ServerChat::listen_connect(int player)
                     work = false;
                     if (sock != -1) close(sock);
                     sock = -1;
-                    dlock();
-                    logging("Server off");
-                    dunlock();
+                    logging("Signal SERVER_OFF");
                     // TODO: off server
                 }
                 break;
@@ -105,11 +143,11 @@ int ServerChat::listen_connect(int player)
     end:
     delete (char *) ptr;
     players.erase(name);
-    sockets.erase(player);
-    close(player);
-    dlock();
+    if (sockets.find(player) != sockets.end()) {
+        close(player);
+        sockets.erase(player);
+    }
     logging(name + " has been disconect");
-    dunlock();
     return 0;
 }
 
@@ -126,16 +164,10 @@ int ServerChat::server()
         if (new_fd <= 0) continue;
         nameconnect = string(inet_ntoa(new_connect.sin_addr)) + ":" +
             to_string(new_connect.sin_port);
-        this->dlock();
-        log << "New connect [" << nameconnect << "] ";
-        log << get_time() << __DATE__ << "\n";
-        this->dunlock();
+        logging("New connect [" + nameconnect + "] " + get_time() + __DATE__ );
         threads.emplace_back(thread(&ServerChat::listen_connect, this, new_fd));
     }
-    return 0;
-}
-int ServerChat::connect2(int player1, int player2)
-{
+    logging("Server close connect");
     return 0;
 }
 
@@ -150,17 +182,17 @@ void ServerChat::dunlock()
 }
 void ServerChat::logging(string s)
 {
+    dlock();
     log << get_time() << ": " << s << endl;
+    cout << get_time() << ": " << s << endl;
+    dunlock();
 }
 
 string ServerChat::get_time()
 {
     time_t cur_sec = time(nullptr);
-
     stringstream time;
-
     tm *tmp_time = localtime(&cur_sec);
-
     asctime(tmp_time);
     time << tmp_time->tm_hour << ':' << tmp_time->tm_min << ':' << tmp_time->tm_sec;
     return time.str();

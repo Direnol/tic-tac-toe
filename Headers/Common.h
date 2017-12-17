@@ -17,24 +17,47 @@
 #include <iostream>
 #include <ctime>
 #include <string.h>
+#include <ncurses.h>
 
 #define BUFFER_SIZE 128
 #define PLAYER_NAME_SIZE 10
 
 using namespace std;
 
+const chtype FIGURE[3][5][5] = {
+        {{'-', '-', '-', '-', '-'},
+                {'|', '\\', ' ', '/', '|'},
+                {'|', ' ', 'x', ' ', '|'},
+                {'|', '/', ' ', '\\', '|'},
+                {'-', '-', '-', '-', '-'}
+
+        },
+        {{'-', '-', '-', '-', '-'},
+                {'|', ' ',  '-', ' ', '|'},
+                {'|', '(', 'o', ')', '|'},
+                {'|', ' ', '-', ' ',  '|'},
+                {'-', '-', '-', '-', '-'}
+        },
+        {{'-', '-', '-', '-', '-'},
+                {'|', ' ',  ' ', ' ', '|'},
+                {'|', ' ', ' ', ' ', '|'},
+                {'|', ' ', ' ', ' ',  '|'},
+                {'-', '-', '-', '-', '-'}
+        }
+};
+
 struct tic_tac {
     char area[3][3];
     int i; // coords game area
     int j; //
-    int figure;
     int winner;
+    int cur_player;
+    int figure;
 
     tic_tac()
     {
-        i = j = 0;
-        figure = 2;
-        winner = -1;
+        i = j = figure = 0;
+        winner = cur_player = -1;
         for (auto &i : area)
             memset(i, 2, 3);
     }
@@ -62,7 +85,10 @@ enum ERROR_CHAT {
 enum COMMANDS {
     ALL,
     GAME,
-    OPTIONS
+    OPTIONS,
+    INIT,
+    PROCESS_GAME,
+    FINISH_GAME
 };
 
 #endif //TIC_TAC_TOE_COMMON_H

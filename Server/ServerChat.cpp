@@ -111,7 +111,8 @@ int ServerChat::listen_connect(int player)
                     init[0] = 1; // figure
                     init[1] = 0; // first step
                     send(player, pmsg, sizeof(msg), 0);
-                    logging(name + " vs " + alien_name);
+                    string buf = name + " vs " + alien_name;
+                    logging(buf);
 
 
                     //start game

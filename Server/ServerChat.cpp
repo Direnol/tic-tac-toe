@@ -87,3 +87,99 @@ string ServerChat::get_time()
     return time.str();
 }
 
+
+int ServerChat::listen_connect(int player)
+{
+    void *ptr = new char[BUFFER_SIZE];
+    auto *pch = static_cast<char *>(ptr);
+    auto *pmsg = static_cast<msg *>(ptr);
+    int status = 0;
+    ssize_t res;
+    if (Login(res, player, pch, ptr)) {
+        delete pch;
+        return EXIT_FAILURE;
+    }
+    string name(pch);
+    logging(name + " has been conected");
+    auto *game_struct = reinterpret_cast<tic_tac *>(pmsg->message);
+    while (work) {
+        res = recv(player, ptr, BUFFER_SIZE, 0);
+        if (res <= 0) {
+            break;
+        }
+        switch (pmsg->code) {
+            case (ALL): {
+                string tmp(name);
+                tmp += ":" + string(pmsg->message);
+                strcpy(pmsg->message, tmp.c_str());
+                logging(tmp);
+                for (auto &it : players) {
+                    if (it.second.first == player) continue;
+                    send(it.second.first, pmsg, sizeof(msg), 0);
+                }
+                break;
+            }
+            case (GAME) : {
+                switchGame(status, pmsg, player, name);
+                break;
+            }
+            case (OPTIONS): {
+                if (strcmp("out", pmsg->message) == 0) {
+                    goto end;
+                } else if (strcmp("kill", pmsg->message) == 0) {
+                    work = false;
+                    if (sock != -1) close(sock);
+                    sock = -1;
+                    logging("Signal SERVER_OFF");
+                    // TODO: off server
+                }
+                break;
+            }
+            case (PROCESS_GAME) : {
+                switchProcessGame(status, pmsg, player, name, game_struct);
+                break;
+            }
+            case FINISH_GAME: {
+                switchFinishGame(status, pmsg, player, name, game_struct);
+                break;
+            }
+            default: {
+                cout << "Default switch find " << pmsg->code << endl;
+                break;
+            }
+        }
+    }
+    end:
+    delete (char *) ptr;
+    players.erase(name);
+    if (sockets.find(player) != sockets.end()) {
+        close(player);
+        sockets.erase(player);
+    }
+    logging(name + " has been disconect");
+    return EXIT_SUCCESS;
+}
+
+int ServerChat::Login(ssize_t &res, int player, char *pch, void *ptr)
+{
+    do {
+        res = static_cast<int>(recv(player, ptr, BUFFER_SIZE, 0));
+        if (res <= 0) {
+            close(player);
+            return EXIT_FAILURE;
+        }
+        pch[res] = '\0';
+        if (players.find(string(pch)) == players.end()) {
+            players.insert(make_pair(string(pch), make_pair(player, -1)));
+            this->sockets.insert(make_pair(player, string(pch)));
+            send(player, "OK", strlen("OK"), 0);
+            break;
+        }
+        send(player, "NO", strlen("NO"), 0);
+    } while (true);
+    return EXIT_SUCCESS;
+}
+
+
+
+

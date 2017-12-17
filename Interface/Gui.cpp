@@ -74,16 +74,15 @@ void Gui::InitAllWin() {
     refresh();
 }
 
-
 void Gui::menu() {
     wclear(area);
-
     mvwaddstr(area, 0, 0, "F2 - new game\n"
             "F3 - connect to game\n"
             "F4 - print list of games\n"
-        "F5 - exit from game(autolose)"
+        "F5 - exit from game(autolose)\n"
+        "Your name is "
     );
-
+    waddstr(area, player_name.data());
     wrefresh(area);
 }
 
@@ -113,6 +112,22 @@ void Gui::tic_tac_toe() {
         }
     }
 }
+
+
+void Gui::printMessage(char *s, int _my)
+{
+    int y = 0, x = 0;
+    waddstr(output_chat, s);
+    getyx(output_chat, y, x);
+    if (y == _my - 1) {
+        wscrl(output_chat, 3);
+        wmove(output_chat, y - 2, 0);
+    } else {
+        wmove(output_chat, y + 1, 0);
+    }
+    wrefresh(output_chat);
+}
+
 
 void Gui::paint(int x, int y, int sybmol, int type_char) {
     int size = 5;

@@ -81,6 +81,8 @@ private:
 
     void autoLose();
 
+    void printMessage(char *s, int _my);
+
 public:
 
     Gui();

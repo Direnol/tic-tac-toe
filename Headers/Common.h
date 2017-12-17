@@ -45,7 +45,6 @@ struct Chat {
     int max;
 };
 
-
 struct msg {
     int code;
     char message[60];

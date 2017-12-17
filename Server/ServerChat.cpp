@@ -11,8 +11,8 @@ ServerChat::ServerChat(const char *ip, uint16_t port)
     int on = 1;
     setsockopt(this->sock, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on));
     sockaddr_in sock_in = {
-            .sin_family = AF_INET,
-            .sin_port = htons(port),
+        .sin_family = AF_INET,
+        .sin_port = htons(port),
     };
     sock_in.sin_addr.s_addr = inet_addr(ip);
 
@@ -103,7 +103,7 @@ int ServerChat::listen_connect(int player)
         }
     }
     end:
-    delete (char *)ptr;
+    delete (char *) ptr;
     players.erase(name);
     sockets.erase(player);
     close(player);
@@ -125,7 +125,7 @@ int ServerChat::server()
         new_fd = accept(sock, (sockaddr *) (&new_connect), &socklen);
         if (new_fd <= 0) continue;
         nameconnect = string(inet_ntoa(new_connect.sin_addr)) + ":" +
-                      to_string(new_connect.sin_port);
+            to_string(new_connect.sin_port);
         this->dlock();
         log << "New connect [" << nameconnect << "] ";
         log << get_time() << __DATE__ << "\n";
@@ -150,10 +150,11 @@ void ServerChat::dunlock()
 }
 void ServerChat::logging(string s)
 {
-    log << get_time() << ":" << s << endl;
+    log << get_time() << ": " << s << endl;
 }
 
-string ServerChat::get_time() {
+string ServerChat::get_time()
+{
     time_t cur_sec = time(nullptr);
 
     stringstream time;
@@ -162,7 +163,6 @@ string ServerChat::get_time() {
 
     asctime(tmp_time);
     time << tmp_time->tm_hour << ':' << tmp_time->tm_min << ':' << tmp_time->tm_sec;
-    time << " ";
     return time.str();
 }
 

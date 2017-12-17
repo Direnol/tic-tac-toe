@@ -33,6 +33,7 @@ int ClientChat::nameSend()
         send(sock, player_name.c_str(),
              player_name.size(), 0
         );
+        if (player_name.size() > PLAYER_NAME_SIZE) continue;
         recv(sock, buf, BUFFER_SIZE, 0);
     } while (strncmp(buf, "OK", 2) != 0);
     return 0;
@@ -62,7 +63,6 @@ void ClientChat::messageRecv(msg *pmsg)
     if (recv(sock, pmsg, sizeof(msg), 0) <= 0) {
         pmsg->code = -1;
     }
-
 }
 
 COMMANDS ClientChat::get_command(string &message, msg pmsg)
@@ -78,11 +78,6 @@ COMMANDS ClientChat::get_command(string &message, msg pmsg)
         }
     }
     return ALL;
-}
-
-bool ClientChat::checkWin(int &who)
-{
-    return false;
 }
 
 ClientChat::ClientChat() = default;

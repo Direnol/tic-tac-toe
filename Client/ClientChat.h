@@ -26,7 +26,6 @@ public:
 
     COMMANDS get_command(string &message, msg pmsg);
 
-    bool checkWin(int &who);
 };
 
 #endif //TIC_TAC_TOE_CLIENTCHAT_H

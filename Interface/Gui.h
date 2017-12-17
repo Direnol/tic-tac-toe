@@ -27,23 +27,18 @@ private:
         my; // MainWidnwo y
     int gx, // GameWindow x
         gy; // GameWindow y
-
-
     WINDOW *game;
     WINDOW *chat_in_box; // box for input_chat
     WINDOW *chat_out_box;
-
     // 0 - menu | 1 - game
     int status;
-
     WINDOW *area;
     tic_tac play;
-
     Chat chat;
-
     WINDOW *input_chat;
     WINDOW *output_chat;
-
+    thread tid;
+    bool work;
     int cur;
 
     void DelWin();
@@ -58,10 +53,6 @@ private:
 
     void initChatOutWindow();
 
-    /* TODO: print menu
-     * F2. create game
-     * F3. list of game
-     * F4. connect*/
     void menu();
 
     void tic_tac_toe();
@@ -72,13 +63,9 @@ private:
 
     void keymap_chat(chtype c);
 
-    thread tid;
-
-    bool work;
-
     void SendMessage();
 
-    size_t rtimr(char *s);
+    size_t rtrim(char *s);
 
     void RecvMessage();
 
@@ -86,6 +73,13 @@ private:
 
     void connectToGame();
 
+    void serverList();
+
+    void sendGameProcess();
+
+    void start_chat();
+
+    void autoLose();
 
 public:
 
@@ -98,10 +92,6 @@ public:
     void repaint();
 
     void loop();
-
-    void start_chat();
-
-    void serverList();
 };
 
 #endif //TIC_TAC_TOE_GUI_H

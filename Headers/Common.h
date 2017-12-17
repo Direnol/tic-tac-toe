@@ -47,7 +47,7 @@ const chtype FIGURE[3][5][5] = {
 };
 
 struct tic_tac {
-    char area[3][3];
+    char area[3][3]{};
     int i; // coords game area
     int j; //
     int winner;

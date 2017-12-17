@@ -68,8 +68,6 @@ private:
 
     int cur;
 
-    bool work;
-
     void DelWin();
 
     void InitAllWin();

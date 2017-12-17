@@ -60,6 +60,7 @@ void Gui::repaint()
 
 void Gui::DelWin()
 {
+    clear();
     delwin(input_chat);
     delwin(area);
     delwin(game);
@@ -84,7 +85,6 @@ void Gui::InitAllWin()
 void Gui::loop()
 {
     chtype c = 0;
-    work = true;
     start_chat();
 
     if (status) {
@@ -92,7 +92,7 @@ void Gui::loop()
     } else {
         menu();
     }
-    while (c != KEY_F(10) && work) {
+    while (c != KEY_F(10)) {
         (cur ? touchwin(area) : touchwin(input_chat));
         c = static_cast<chtype>(getch());
         if (c == '\t') {
@@ -114,7 +114,7 @@ void Gui::loop()
         }
     }
     messageSend(const_cast<char *>("/sgout"), strlen("/sgout"));
-    work = false;
+    sleep(1);
 }
 void Gui::menu()
 {
@@ -245,6 +245,7 @@ void Gui::keymap_chat(chtype c)
         }
     }
 }
+
 Gui::Gui(char *ip, uint16_t port) : ClientChat(ip, port)
 {
     nameSend();
@@ -274,11 +275,10 @@ void Gui::RecvMessage()
     msg pmsg{};
     int mx, my, x, y;
     getmaxyx(output_chat, my, mx);
-    while (work) {
+    while (true) {
         messageRecv(&pmsg);
         if (pmsg.code < 0) {
             waddstr(output_chat, "!!! ");
-            work = false;
             break;
         }
         waddstr(output_chat, pmsg.message);
@@ -294,6 +294,7 @@ void Gui::RecvMessage()
     waddstr(output_chat, "Disconnect from server");
     wrefresh(output_chat);
 }
+
 size_t Gui::rtimr(char *s)
 {
     size_t n = strlen(s);

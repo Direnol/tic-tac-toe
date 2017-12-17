@@ -10,6 +10,6 @@ int main()
         cout << e << endl;
     }
     chat->server();
-
+    delete chat;
     return 0;
 }

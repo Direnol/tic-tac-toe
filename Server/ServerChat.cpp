@@ -1,7 +1,6 @@
 #include <sstream>
 #include "ServerChat.h"
 
-using namespace std;
 ServerChat::ServerChat(const char *ip, uint16_t port)
 {
     if (ip == nullptr) throw ERROR_IP;
@@ -28,9 +27,15 @@ ServerChat::ServerChat(const char *ip, uint16_t port)
 
 ServerChat::~ServerChat()
 {
-    log.close();
     if (sock != -1) close(sock);
     sock = -1;
+    for (auto &it : sockets) {
+        sockets.erase(it.first);
+        close(it.first);
+    }
+    for (auto &it : threads) it.join();
+    logging("Server is closed");
+    log.close();
 }
 
 int ServerChat::listen_connect(int player)
@@ -55,9 +60,7 @@ int ServerChat::listen_connect(int player)
     } while (true);
 
     string name(pch);
-    dlock();
     logging(name + " has been conected");
-    dunlock();
     while (work) {
         res = recv(player, ptr, BUFFER_SIZE, 0);
         if (res <= 0) {
@@ -68,9 +71,7 @@ int ServerChat::listen_connect(int player)
                 string tmp(name);
                 tmp += ":" + string(pmsg->message);
                 strcpy(pmsg->message, tmp.c_str());
-                dlock();
                 logging(tmp);
-                dunlock();
                 for (auto &it : players) {
                     if (it.second.first == player) continue;
                     send(it.second.first, pmsg, sizeof(msg), 0);
@@ -89,9 +90,7 @@ int ServerChat::listen_connect(int player)
                     work = false;
                     if (sock != -1) close(sock);
                     sock = -1;
-                    dlock();
-                    logging("Server off");
-                    dunlock();
+                    logging("Signal SERVER_OFF");
                     // TODO: off server
                 }
                 break;
@@ -105,11 +104,11 @@ int ServerChat::listen_connect(int player)
     end:
     delete (char *) ptr;
     players.erase(name);
-    sockets.erase(player);
-    close(player);
-    dlock();
+    if (sockets.find(player) != sockets.end()) {
+        close(player);
+        sockets.erase(player);
+    }
     logging(name + " has been disconect");
-    dunlock();
     return 0;
 }
 
@@ -126,14 +125,13 @@ int ServerChat::server()
         if (new_fd <= 0) continue;
         nameconnect = string(inet_ntoa(new_connect.sin_addr)) + ":" +
             to_string(new_connect.sin_port);
-        this->dlock();
-        log << "New connect [" << nameconnect << "] ";
-        log << get_time() << __DATE__ << "\n";
-        this->dunlock();
+        logging("New connect [" + nameconnect + "] " + get_time() + __DATE__ );
         threads.emplace_back(thread(&ServerChat::listen_connect, this, new_fd));
     }
+    logging("Server close connect");
     return 0;
 }
+
 int ServerChat::connect2(int player1, int player2)
 {
     return 0;
@@ -150,17 +148,17 @@ void ServerChat::dunlock()
 }
 void ServerChat::logging(string s)
 {
+    dlock();
     log << get_time() << ": " << s << endl;
+    cout << get_time() << ": " << s << endl;
+    dunlock();
 }
 
 string ServerChat::get_time()
 {
     time_t cur_sec = time(nullptr);
-
     stringstream time;
-
     tm *tmp_time = localtime(&cur_sec);
-
     asctime(tmp_time);
     time << tmp_time->tm_hour << ':' << tmp_time->tm_min << ':' << tmp_time->tm_sec;
     return time.str();

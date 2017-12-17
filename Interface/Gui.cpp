@@ -75,6 +75,7 @@ void Gui::InitAllWin()
     getmaxyx(stdscr, this->my, this->mx);
     noecho();
     keypad(stdscr, true);
+    halfdelay(1);
     box(stdscr, 0, 0);
     this->gy = this->my / 2;
     this->gx = this->mx / 2;
@@ -85,6 +86,7 @@ void Gui::InitAllWin()
 void Gui::loop()
 {
     chtype c = 0;
+    work = true;
     start_chat();
 
     if (status) {
@@ -92,9 +94,10 @@ void Gui::loop()
     } else {
         menu();
     }
-    while (c != KEY_F(10)) {
+    while (c != KEY_F(10) && work) {
         (cur ? touchwin(area) : touchwin(input_chat));
         c = static_cast<chtype>(getch());
+        if (c == ERR) continue;
         if (c == '\t') {
             cur ^= 1;
             continue;
@@ -113,9 +116,11 @@ void Gui::loop()
             wrefresh(area);
         }
     }
+    work = false;
     messageSend(const_cast<char *>("/sgout"), strlen("/sgout"));
     sleep(1);
 }
+
 void Gui::menu()
 {
 
@@ -275,9 +280,10 @@ void Gui::RecvMessage()
     msg pmsg{};
     int mx, my, x, y;
     getmaxyx(output_chat, my, mx);
-    while (true) {
+    while (work) {
         messageRecv(&pmsg);
         if (pmsg.code < 0) {
+            work = false;
             waddstr(output_chat, "!!! ");
             break;
         }

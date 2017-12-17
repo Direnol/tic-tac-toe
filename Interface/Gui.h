@@ -96,6 +96,8 @@ private:
 
     thread tid;
 
+    bool work;
+
     void SendMessage();
 
     size_t rtimr(char *s);

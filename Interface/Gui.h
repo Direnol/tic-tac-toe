@@ -8,7 +8,7 @@
 #include <csignal>
 #include <string>
 
-/* TODO: Description ncurses text-style
+/*
     A_NORMAL             //- обычный режим
     A_STANDOUT           //- самое яркое выделение из всех возможных
     A_UNDERLINE          //- подчёркивание
@@ -20,7 +20,6 @@
 
 void resize_term(int sig);
 
-// TODO: Description GUI for client
 class Gui : public ClientChat {
 private:
     int mx, // MainWindow x
@@ -80,6 +79,8 @@ private:
     void start_chat();
 
     void autoLose();
+
+    void printMessage(char *s, int _my);
 
 public:
 

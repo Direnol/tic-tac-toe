@@ -17,15 +17,7 @@ private:
     vector<thread> threads;
     mutex mut;
 
-public:
-
-    ServerChat(const char *ip, uint16_t port);
-
-    ~ServerChat();
-
     int listen_connect(int player);
-
-    int server();
 
     void dlock();
 
@@ -36,6 +28,22 @@ public:
     string get_time();
 
     bool getWinner(tic_tac *game, int &who);
+
+    void switchGame(int &status, msg *pmsg, int player, string &name);
+
+    void switchFinishGame(int &status, msg *pmsg, int player, string &name, tic_tac *game_struct);
+
+    void switchProcessGame(int &status, msg *pmsg, int player, string &name, tic_tac *game_struct);
+
+    int Login(ssize_t &res, int player, char *pch, void *ptr);
+
+public:
+
+    ServerChat(const char *ip, uint16_t port);
+
+    int server();
+
+    ~ServerChat();
 };
 
 #endif //TIC_TAC_TOE_ServerChat_H

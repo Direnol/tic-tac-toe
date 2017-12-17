@@ -35,8 +35,6 @@ void Gui::loop() {
             menu();
         }
 
-        // TODO key handler for F4, F5
-
         switch (c) {
             case KEY_F(2): {
                 createGame();
@@ -171,24 +169,39 @@ void Gui::SendMessage() {
     char message[BUFFER_SIZE];
     mvwinstr(input_chat, 0, 0, message);
     size_t n = rtrim(message);
+    int _mx, _my;
+    getmaxyx(output_chat, _my, _mx);
+    char buf[player_name.size() + strlen(message) + 2];
+    sprintf(buf, "%s:%s", player_name.data(), message);
+    printMessage(buf, _my);
     messageSend(message, n);
     wclear(input_chat);
     chat.pos = chat.max = 0;
+
 }
 
 void Gui::RecvMessage() {
     msg pmsg{};
-    int mx, my, x, y;
+    int mx, my;
     auto *game_struct = reinterpret_cast<tic_tac *>(pmsg.message);
-    getmaxyx(output_chat, my, mx);
     while (work) {
         messageRecv(&pmsg);
+        getmaxyx(output_chat, my, mx);
         if (pmsg.code < 0) {
             work = false;
             waddstr(output_chat, "!!! ");
             break;
         }
         switch (pmsg.code) {
+            // TODO: доделать ебаный список игр
+            case OPTIONS: {
+                int count = ((int *) pmsg.message)[0];
+                auto *buf = new char[count];
+                recv(sock, buf, sizeof(int) * count, 0);
+
+                delete[] buf;
+                break;
+            }
             case INIT: {
                 auto *init = reinterpret_cast<int *>(pmsg.message);
                 this->play.figure = init[0]; // figure
@@ -222,15 +235,7 @@ void Gui::RecvMessage() {
                 break;
             }
             default:
-                waddstr(output_chat, pmsg.message);
-                getyx(output_chat, y, x);
-                if (y == my - 1) {
-                    wscrl(output_chat, 3);
-                    wmove(output_chat, y - 2, 0);
-                } else {
-                    wmove(output_chat, y + 1, 0);
-                }
-                wrefresh(output_chat);
+                printMessage(pmsg.message, my);
         }
     }
     waddstr(output_chat, "Disconnect from server");
@@ -252,7 +257,7 @@ void Gui::connectToGame() {
 }
 
 void Gui::serverList() {
-    // TODO: server's list
+    messageSend(const_cast<char *>("/sglist"), strlen("/sglist"));
 }
 
 void Gui::sendGameProcess()
@@ -270,4 +275,3 @@ void Gui::autoLose()
 {
 
 }
-

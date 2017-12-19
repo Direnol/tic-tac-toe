@@ -87,7 +87,7 @@ void ServerChat::switchGame(int &status, msg *pmsg, int player, string &name)
     status ^= 1;
     string buffer = "Nobody created game";
     if (strcmp("create", pmsg->message) == 0) {
-    create:
+        create:
         qgame.emplace_back(player);
         pmsg->code = ALL;
         buffer = name + " has created game!";

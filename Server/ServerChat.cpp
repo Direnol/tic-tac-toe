@@ -38,7 +38,6 @@ ServerChat::~ServerChat()
     log.close();
 }
 
-
 int ServerChat::server()
 {
     int new_fd;
@@ -86,7 +85,6 @@ string ServerChat::get_time()
     time << tmp_time->tm_hour << ':' << tmp_time->tm_min << ':' << tmp_time->tm_sec;
     return time.str();
 }
-
 
 int ServerChat::listen_connect(int player)
 {

@@ -48,7 +48,7 @@ int ClientChat::messageSend(char *message, size_t n)
 {
     msg pmsg = {};
     string _msg(message);
-    pmsg.code = get_command(_msg, pmsg);
+    pmsg.code = get_command(_msg);
 
     if (n > 50) return 1;
 
@@ -65,7 +65,7 @@ void ClientChat::messageRecv(msg *pmsg)
     }
 }
 
-COMMANDS ClientChat::get_command(string &message, msg pmsg)
+COMMANDS ClientChat::get_command(string &message)
 {
     if (message.size() > 2) {
         if (message.find("/sg", 0) != string::npos) {

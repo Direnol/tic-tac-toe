@@ -35,7 +35,7 @@ void Gui::loop() {
             menu();
         }
 
-        // TODO key handler for F4, F5
+        // TODO key handler for F4(list), F5(exit in game)
 
         switch (c) {
             case KEY_F(2): {
@@ -73,6 +73,7 @@ void Gui::loop() {
         }
     }
     work = false;
+    // TODO exit in game (/glose)
     messageSend(const_cast<char *>("/sgout"), strlen("/sgout"));
     sleep(1);
 }
@@ -265,5 +266,5 @@ void Gui::sendGameProcess()
 
 void Gui::autoLose()
 {
-
+    // TODO exit in game
 }

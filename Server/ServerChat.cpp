@@ -137,7 +137,6 @@ int ServerChat::listen_connect(int player)
                     if (sock != -1) close(sock);
                     sock = -1;
                     logging("Signal SERVER_OFF");
-                    // TODO: off server
                 }
                 break;
             }
@@ -156,6 +155,7 @@ int ServerChat::listen_connect(int player)
         }
     }
     end:
+    // TODO FAILED END
     delete (char *) ptr;
     players.erase(name);
     if (sockets.find(player) != sockets.end()) {

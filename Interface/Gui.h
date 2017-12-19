@@ -8,16 +8,6 @@
 #include <csignal>
 #include <string>
 
-/* TODO: Description ncurses text-style
-    A_NORMAL             //- обычный режим
-    A_STANDOUT           //- самое яркое выделение из всех возможных
-    A_UNDERLINE          //- подчёркивание
-    A_BLINK              //- мигание
-    A_DIM                //- тусклый символ
-    A_BOLD               //- выделение жирным шрифтом
-*/
-
-
 void resize_term(int sig);
 
 // TODO: Description GUI for client

@@ -2,7 +2,6 @@
 
 bool ServerChat::getWinner(tic_tac *game, int &who)
 {
-    // TODO need correct check: who win or nobody win
     bool win = false;
     int c1 = 1, c2 = 1;
     for (auto &i : game->area) {

@@ -120,6 +120,12 @@ int ServerChat::listen_connect(int player)
                 break;
             }
             case (GAME) : {
+                if (status) {
+                    pmsg->code = ALL;
+                    strcpy(pmsg->message, "You are already in game or queue for game");
+                    send(player, pmsg, sizeof(msg), 0);
+                    break;
+                }
                 switchGame(status, pmsg, player, name);
                 break;
             }

@@ -155,7 +155,9 @@ int ServerChat::listen_connect(int player)
         }
     }
     end:
-    // TODO FAILED END
+    if (status) {
+        // TODO FAILED END or lose
+    }
     delete (char *) ptr;
     players.erase(name);
     if (sockets.find(player) != sockets.end()) {

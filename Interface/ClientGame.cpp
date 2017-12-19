@@ -73,7 +73,10 @@ void Gui::loop() {
         }
     }
     work = false;
-    // TODO exit in game (/glose)
+    if (status) {
+        // TODO exit in game (/glose)
+        autoLose();
+    }
     messageSend(const_cast<char *>("/sgout"), strlen("/sgout"));
     sleep(1);
 }

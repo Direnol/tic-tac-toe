@@ -86,10 +86,12 @@ bool ServerChat::getWinner(tic_tac *game, int &who)
 void ServerChat::switchGame(int &status, msg *pmsg, int player, string &name)
 {
     status ^= 1;
+    string buffer = "Nobody created game";
     if (strcmp("create", pmsg->message) == 0) {
-        string buffer = name + " has created game!";
+    create:
         qgame.emplace_back(player);
         pmsg->code = ALL;
+        buffer = name + " has created game!";
         logging(buffer);
         strcpy(pmsg->message, buffer.data());
         for (auto &it : players) {
@@ -100,6 +102,11 @@ void ServerChat::switchGame(int &status, msg *pmsg, int player, string &name)
         logging(name + " created game");
     } else if (strcmp("connect", pmsg->message) == 0) {
         pmsg->code = ALL;
+        if (qgame.empty()) {
+            strcpy(pmsg->message, buffer.data());
+            send(player, pmsg, sizeof(msg), 0);
+            goto create;
+        }
         strcpy(pmsg->message, "Your figure is (0)");
         send(player, pmsg, sizeof(msg), 0);
         strcpy(pmsg->message, "Your turn");

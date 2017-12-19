@@ -179,7 +179,6 @@ void Gui::SendMessage() {
     messageSend(message, n);
     wclear(input_chat);
     chat.pos = chat.max = 0;
-
 }
 
 void Gui::RecvMessage() {

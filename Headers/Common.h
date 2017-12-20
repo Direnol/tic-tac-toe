@@ -16,12 +16,57 @@
 #include <sys/socket.h>
 #include <iostream>
 #include <ctime>
-
+#include <cstring>
+#include <ncurses.h>
 
 #define BUFFER_SIZE 128
 #define PLAYER_NAME_SIZE 10
 
 using namespace std;
+
+const chtype FIGURE[3][5][5] = {
+    {{'-', '-', '-', '-', '-'},
+     {'|', '\\', ' ', '/', '|'},
+     {'|', ' ', 'x', ' ', '|'},
+     {'|', '/', ' ', '\\', '|'},
+     {'-', '-', '-', '-', '-'}
+
+    },
+    {{'-', '-', '-', '-', '-'},
+     {'|', ' ', '-', ' ', '|'},
+     {'|', '(', 'o', ')', '|'},
+     {'|', ' ', '-', ' ', '|'},
+     {'-', '-', '-', '-', '-'}
+    },
+    {{'-', '-', '-', '-', '-'},
+     {'|', ' ', ' ', ' ', '|'},
+     {'|', ' ', ' ', ' ', '|'},
+     {'|', ' ', ' ', ' ', '|'},
+     {'-', '-', '-', '-', '-'}
+    }
+};
+
+struct tic_tac {
+    char area[3][3]{};
+    int i; // coords game area
+    int j; //
+    int winner;
+    int cur_player;
+    int figure;
+
+    tic_tac()
+    {
+        i = j = figure = 0;
+        winner = cur_player = -1;
+        for (auto &i : area)
+            memset(i, 2, 3);
+    }
+};
+
+struct Chat {
+    int pos;
+    int max;
+};
 
 struct msg {
     int code;
@@ -37,10 +82,13 @@ enum ERROR_CHAT {
     ERROR_CONNECT
 };
 
-enum COMMANDS{
+enum COMMANDS {
     ALL,
     GAME,
-    OPTIONS
+    OPTIONS,
+    INIT,
+    PROCESS_GAME,
+    FINISH_GAME
 };
 
 #endif //TIC_TAC_TOE_COMMON_H

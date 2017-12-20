@@ -1,32 +1,31 @@
 #ifndef TIC_TAC_TOE_CLIENTCHAT_H
 #define TIC_TAC_TOE_CLIENTCHAT_H
 
-
 #include "../Headers/Common.h"
 
 class ClientChat {
-private:
+protected:
     int sock;
     string ip;
     int port;
     string player_name;
 public:
+    ClientChat();
+
     ClientChat(const char *ip, int port);
 
-    ~ClientChat();
+    virtual ~ClientChat();
 
     void nameSet();
 
     int nameSend();
 
-    int messageSend();
+    int messageSend(char *message, size_t n);
 
-    int messageRecv();
+    void messageRecv(msg *pmsg);
 
-    void start();
+    COMMANDS get_command(string &message);
 
-    COMMANDS get_command(string message, msg pmsg);
 };
-
 
 #endif //TIC_TAC_TOE_CLIENTCHAT_H

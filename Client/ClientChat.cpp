@@ -1,7 +1,8 @@
 #include <cstring>
 #include "ClientChat.h"
 
-ClientChat::ClientChat(const char *ip, int port) {
+ClientChat::ClientChat(const char *ip, int port)
+{
     this->ip = ip;
     this->port = port;
 
@@ -15,11 +16,14 @@ ClientChat::ClientChat(const char *ip, int port) {
 
 }
 
-ClientChat::~ClientChat() {
-    close(sock);
+ClientChat::~ClientChat()
+{
+    if (sock != -1) close(sock);
+    sock = -1;
 }
 
-int ClientChat::nameSend() {
+int ClientChat::nameSend()
+{
     char buf[BUFFER_SIZE];
 
     do {
@@ -29,66 +33,54 @@ int ClientChat::nameSend() {
         send(sock, player_name.c_str(),
              player_name.size(), 0
         );
+        if (player_name.size() > PLAYER_NAME_SIZE) continue;
         recv(sock, buf, BUFFER_SIZE, 0);
-    } while (strcmp(buf, "OK") != 0);
-
+    } while (strncmp(buf, "OK", 2) != 0);
     return 0;
 }
 
-void ClientChat::nameSet() {
+void ClientChat::nameSet()
+{
     cin >> player_name;
 }
 
-int ClientChat::messageSend() {
+int ClientChat::messageSend(char *message, size_t n)
+{
     msg pmsg = {};
+    string _msg(message);
+    pmsg.code = get_command(_msg);
 
-    string tmp;
-    while (true) {
-        getline(cin, tmp);
+    if (n > 50) return 1;
 
-        pmsg.code = get_command(tmp, pmsg);
+    strcpy(pmsg.message, _msg.data());
 
-        if (tmp.size() > 50) return 1;
+    if (send(sock, &pmsg, sizeof(msg), 0) <= 0) return EXIT_FAILURE;
+    return EXIT_SUCCESS;
+}
 
-        strcpy(pmsg.message, tmp.c_str());
-
-        if (send(sock, &pmsg, sizeof(msg), 0) <= 0) break;
+void ClientChat::messageRecv(msg *pmsg)
+{
+    if (recv(sock, pmsg, sizeof(msg), 0) <= 0) {
+        pmsg->code = -1;
     }
-    return 0;
 }
 
-int ClientChat::messageRecv() {
-    msg pmsg = {};
-    while (true) {
-        if (recv(sock, &pmsg, sizeof(msg), 0) <= 0) break;
-
-        cout << pmsg.code << ' ' << pmsg.message << endl;
-    }
-    return 0;
-}
-
-void ClientChat::start() {
-
-    thread th[2];
-
-    th[0] = thread(&ClientChat::messageSend, this);
-    th[1] = thread(&ClientChat::messageRecv, this);
-    for (auto &i : th) i.join();
-}
-
-COMMANDS ClientChat::get_command(string message, msg pmsg) {
+COMMANDS ClientChat::get_command(string &message)
+{
     if (message.size() > 2) {
         if (message.find("/sg", 0) != string::npos) {
+            message.erase(0, 3);
             return OPTIONS;
         }
-        if (message.find("/s", 0) != string::npos) {
-
-        }
-        if (false) {
-            // TODO: обработчик клиентских команд
+        if (message.find("/g", 0) != string::npos) {
+            message.erase(0, 2);
+            return GAME;
         }
     }
+    return ALL;
 }
+
+ClientChat::ClientChat() = default;
 
 
 

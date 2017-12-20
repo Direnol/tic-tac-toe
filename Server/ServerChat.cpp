@@ -154,7 +154,19 @@ int ServerChat::listen_connect(int player)
     }
     end:
     if (status) {
-        // TODO FAILED END or lose
+        bool ingame = true;
+        for (auto it = qgame.begin(); it != qgame.end(); ++it) {
+            if (*it == player) {
+                qgame.erase(it);
+                ingame = false;
+                break;
+            }
+        }
+        if (ingame) {
+            pmsg->code = GAME;
+            strcpy(pmsg->message, "Another player is exit.");
+            send(players[name].second, pmsg, sizeof(msg), 0);
+        }
     }
     delete (char *) ptr;
     players.erase(name);

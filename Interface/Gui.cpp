@@ -88,8 +88,6 @@ void Gui::menu()
     wclear(area);
     mvwaddstr(area, 0, 0, "F2 - new game\n"
         "F3 - connect to game\n"
-        "F4 - print list of games\n"
-        "F5 - exit from game(autolose)\n"
         "Your name is "
     );
     waddstr(area, player_name.data());

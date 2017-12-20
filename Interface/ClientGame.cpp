@@ -38,8 +38,6 @@ void Gui::loop()
             menu();
         }
 
-        // TODO key handler for F4(list), F5(exit in game)
-
         switch (c) {
             case KEY_F(2): {
                 createGame();
@@ -50,15 +48,6 @@ void Gui::loop()
                 connectToGame();
                 game_flag = true;
                 break;
-            }
-            case KEY_F(4): {
-                serverList();
-                game_flag = true;
-                break;
-            }
-            case KEY_F(5): {
-                autoLose();
-                game_flag = true;
             }
             default:break;
         }
@@ -75,10 +64,6 @@ void Gui::loop()
         }
     }
     work = false;
-    if (status) {
-        // TODO exit in game (/glose)
-        autoLose();
-    }
     messageSend(const_cast<char *>("/sgout"), strlen("/sgout"));
     sleep(1);
 }
@@ -212,7 +197,15 @@ void Gui::RecvMessage()
                 break;
             }
             case GAME: {
-                // TODO FAILED END
+                printMessage(pmsg.message, my);
+                play.winner = play.figure;
+                pmsg.code = FINISH_GAME;
+                game_struct->winner = play.figure;
+                send(sock, &pmsg, sizeof(msg), 0);
+                status = 0;
+                menu();
+                cur = 0;
+                play = tic_tac();
                 break;
             }
             case PROCESS_GAME: {
@@ -258,10 +251,6 @@ void Gui::connectToGame()
     messageSend(const_cast<char *>("/gconnect"), strlen("/gconnect"));
 }
 
-void Gui::serverList()
-{
-    // TODO: server's list
-}
 
 void Gui::sendGameProcess()
 {
@@ -272,9 +261,4 @@ void Gui::sendGameProcess()
     send(sock, &pmsg, sizeof(msg), 0);
     play.cur_player ^= 1;
     sleep(1);
-}
-
-void Gui::autoLose()
-{
-    // TODO exit in game
 }

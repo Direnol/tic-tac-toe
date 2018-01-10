@@ -55,27 +55,6 @@ bool ServerChat::getWinner(tic_tac *game, int &who)
         win = true;
     }
     if (win) return win;
-
-    c1 = c2 = 0;
-    if (game->area[0][2] == 0) ++c1;
-    if (game->area[0][2] == 1) ++c2;
-    if (game->area[1][1] == 0) ++c1;
-    if (game->area[1][1] == 1) ++c2;
-    if (game->area[2][0] == 0) ++c1;
-    if (game->area[2][0] == 1) ++c2;
-
-    if (c1 == 3) {
-        who = 0;
-        win = true;
-    }
-    if (c2 == 3) {
-        who = 1;
-        win = true;
-    }
-    if (win) return win;
-
-
-
     c1 = c2 = 1;
     for (int i = 2, j = 2; i > 0; --j, --i) {
         if (game->area[i][j] == 0 && game->area[i - 1][j - 1] == game->area[i][j]) ++c1;
@@ -90,8 +69,6 @@ bool ServerChat::getWinner(tic_tac *game, int &who)
         win = true;
     }
     if (win) return win;
-
-
     c1 = 0;
     for (auto &i : game->area) {
         for (char j : i) {
@@ -102,18 +79,18 @@ bool ServerChat::getWinner(tic_tac *game, int &who)
         win = true;
         who = 2;
     }
-
-
     return win;
 }
 
 void ServerChat::switchGame(int &status, msg *pmsg, int player, string &name)
 {
     status ^= 1;
+    string buffer = "Nobody created game";
     if (strcmp("create", pmsg->message) == 0) {
-        string buffer = name + " has created game!";
+        create:
         qgame.emplace_back(player);
         pmsg->code = ALL;
+        buffer = name + " has created game!";
         logging(buffer);
         strcpy(pmsg->message, buffer.data());
         for (auto &it : players) {
@@ -124,6 +101,11 @@ void ServerChat::switchGame(int &status, msg *pmsg, int player, string &name)
         logging(name + " created game");
     } else if (strcmp("connect", pmsg->message) == 0) {
         pmsg->code = ALL;
+        if (qgame.empty()) {
+            strcpy(pmsg->message, buffer.data());
+            send(player, pmsg, sizeof(msg), 0);
+            goto create;
+        }
         strcpy(pmsg->message, "Your figure is (0)");
         send(player, pmsg, sizeof(msg), 0);
         strcpy(pmsg->message, "Your turn");
@@ -184,7 +166,7 @@ void ServerChat::switchProcessGame(int &status, msg *pmsg, int player, string &n
         send(player, pmsg, sizeof(msg), 0);
         return;
     }
-    string logger = name + "put " + (game_struct->figure == 0 ? "[X] to (" : "[0] to (") +
+    string logger = name + " put " + (game_struct->figure == 0 ? "[X] to (" : "[0] to (") +
         to_string(game_struct->i) + ',' + to_string(game_struct->j) + ')';
     logging(logger);
     send(players[name].second, pmsg, sizeof(msg), 0);

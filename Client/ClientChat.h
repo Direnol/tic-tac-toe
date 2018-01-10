@@ -24,7 +24,7 @@ public:
 
     void messageRecv(msg *pmsg);
 
-    COMMANDS get_command(string &message, msg pmsg);
+    COMMANDS get_command(string &message);
 
 };
 

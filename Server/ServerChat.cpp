@@ -38,7 +38,6 @@ ServerChat::~ServerChat()
     log.close();
 }
 
-
 int ServerChat::server()
 {
     int new_fd;
@@ -87,7 +86,6 @@ string ServerChat::get_time()
     return time.str();
 }
 
-
 int ServerChat::listen_connect(int player)
 {
     void *ptr = new char[BUFFER_SIZE];
@@ -120,6 +118,12 @@ int ServerChat::listen_connect(int player)
                 break;
             }
             case (GAME) : {
+                if (status) {
+                    pmsg->code = ALL;
+                    strcpy(pmsg->message, "You are already in game or queue for game");
+                    send(player, pmsg, sizeof(msg), 0);
+                    break;
+                }
                 switchGame(status, pmsg, player, name);
                 break;
             }
@@ -131,7 +135,6 @@ int ServerChat::listen_connect(int player)
                     if (sock != -1) close(sock);
                     sock = -1;
                     logging("Signal SERVER_OFF");
-                    // TODO: off server
                 }
                 break;
             }
@@ -150,6 +153,21 @@ int ServerChat::listen_connect(int player)
         }
     }
     end:
+    if (status) {
+        bool ingame = true;
+        for (auto it = qgame.begin(); it != qgame.end(); ++it) {
+            if (*it == player) {
+                qgame.erase(it);
+                ingame = false;
+                break;
+            }
+        }
+        if (ingame) {
+            pmsg->code = GAME;
+            strcpy(pmsg->message, "Another player is exit.");
+            send(players[name].second, pmsg, sizeof(msg), 0);
+        }
+    }
     delete (char *) ptr;
     players.erase(name);
     if (sockets.find(player) != sockets.end()) {

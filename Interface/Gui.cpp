@@ -1,26 +1,30 @@
 #include "Gui.h"
 
-Gui::Gui() {
+Gui::Gui()
+{
     InitAllWin();
     status = 0;
     cur = 0;
     initMainWindow();
 }
 
-void Gui::initMainWindow() {
+void Gui::initMainWindow()
+{
     initGameWindow();
     initChatOutWindow();
     initChatInWindow();
 }
 
-void Gui::initGameWindow() {
+void Gui::initGameWindow()
+{
     game = newwin(1 + my - (gy / 2), gx, 1, 1);
     box(game, 0, 0);
     area = derwin(game, getmaxy(game) - 2, getmaxx(game) - 2, 1, 1);
     wrefresh(game);
 }
 
-void Gui::initChatInWindow() {
+void Gui::initChatInWindow()
+{
     int input_area = my - (gy * 2 - gy * 1 / 2);
     chat_in_box = newwin((input_area) < 7 ? input_area - 1 : input_area, mx - gx - 2, my - (gy - 3), gx + 1);
     box(chat_in_box, 0, 0);
@@ -29,7 +33,8 @@ void Gui::initChatInWindow() {
 
 }
 
-void Gui::initChatOutWindow() {
+void Gui::initChatOutWindow()
+{
     chat_out_box = newwin(my - (gy - 2), mx - gx - 2, 1, gx + 1);
     box(chat_out_box, 0, 0);
     wrefresh(chat_out_box);
@@ -37,21 +42,24 @@ void Gui::initChatOutWindow() {
     scrollok(output_chat, true);
 }
 
-Gui::~Gui() {
+Gui::~Gui()
+{
     DelWin();
     if (sock != -1) close(sock);
     sock = -1;
     tid.join();
 }
 
-void Gui::repaint() {
+void Gui::repaint()
+{
     clear();
     DelWin();
     InitAllWin();
     initMainWindow();
 }
 
-void Gui::DelWin() {
+void Gui::DelWin()
+{
     clear();
     delwin(input_chat);
     delwin(area);
@@ -61,7 +69,8 @@ void Gui::DelWin() {
     endwin();
 }
 
-void Gui::InitAllWin() {
+void Gui::InitAllWin()
+{
     initscr();
     getmaxyx(stdscr, this->my, this->mx);
     noecho();
@@ -74,12 +83,11 @@ void Gui::InitAllWin() {
     refresh();
 }
 
-void Gui::menu() {
+void Gui::menu()
+{
     wclear(area);
     mvwaddstr(area, 0, 0, "F2 - new game\n"
-            "F3 - connect to game\n"
-            "F4 - print list of games\n"
-        "F5 - exit from game(autolose)\n"
+        "F3 - connect to game\n"
         "Your name is "
     );
     waddstr(area, player_name.data());
@@ -87,7 +95,8 @@ void Gui::menu() {
 }
 
 // Отрисовка Х либо О на поле
-void Gui::tic_tac_toe() {
+void Gui::tic_tac_toe()
+{
     wclear(area);
 
     for (int i = 0; i < 3; ++i) {
@@ -113,7 +122,6 @@ void Gui::tic_tac_toe() {
     }
 }
 
-
 void Gui::printMessage(char *s, int _my)
 {
     int y = 0, x = 0;
@@ -128,8 +136,8 @@ void Gui::printMessage(char *s, int _my)
     wrefresh(output_chat);
 }
 
-
-void Gui::paint(int x, int y, int sybmol, int type_char) {
+void Gui::paint(int x, int y, int sybmol, int type_char)
+{
     int size = 5;
     for (int i = 0; i < 5; ++i) {
         for (int j = 0; j < 5; ++j) {

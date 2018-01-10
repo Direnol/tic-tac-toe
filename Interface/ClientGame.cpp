@@ -1,6 +1,7 @@
 #include "Gui.h"
 
-Gui::Gui(char *ip, uint16_t port) : ClientChat(ip, port) {
+Gui::Gui(char *ip, uint16_t port) : ClientChat(ip, port)
+{
     nameSend();
     InitAllWin();
     status = 0;
@@ -8,11 +9,13 @@ Gui::Gui(char *ip, uint16_t port) : ClientChat(ip, port) {
     initMainWindow();
 }
 
-void Gui::start_chat() {
+void Gui::start_chat()
+{
     tid = thread(&Gui::RecvMessage, this);
 }
 
-void Gui::loop() {
+void Gui::loop()
+{
     chtype c = 0;
     work = true;
     start_chat();
@@ -46,17 +49,7 @@ void Gui::loop() {
                 game_flag = true;
                 break;
             }
-            case KEY_F(4): {
-                serverList();
-                game_flag = true;
-                break;
-            }
-            case KEY_F(5): {
-                autoLose();
-                game_flag = true;
-            }
-            default:
-                break;
+            default:break;
         }
 
         if (game_flag) continue;
@@ -75,7 +68,8 @@ void Gui::loop() {
     sleep(1);
 }
 
-int Gui::pressedKey(unsigned int key) {
+int Gui::pressedKey(unsigned int key)
+{
     switch (key) {
         case '\n': {
             if (play.area[play.i][play.j] == 2 && play.figure == play.cur_player) {
@@ -104,14 +98,14 @@ int Gui::pressedKey(unsigned int key) {
             play.i++;
             break;
         }
-        default:
-            break;
+        default:break;
     }
 
     return 0;
 }
 
-void Gui::keymap_chat(chtype c) {
+void Gui::keymap_chat(chtype c)
+{
     if (c == '\n') {
         this->SendMessage();
         return;
@@ -141,8 +135,7 @@ void Gui::keymap_chat(chtype c) {
             break;
         }
         case KEY_UP:
-        case KEY_DOWN:
-            break;
+        case KEY_DOWN:break;
         case KEY_BACKSPACE:
         case 127: {
             if (chat.pos == 0) break;
@@ -165,7 +158,8 @@ void Gui::keymap_chat(chtype c) {
     }
 }
 
-void Gui::SendMessage() {
+void Gui::SendMessage()
+{
     char message[BUFFER_SIZE];
     mvwinstr(input_chat, 0, 0, message);
     size_t n = rtrim(message);
@@ -177,10 +171,10 @@ void Gui::SendMessage() {
     messageSend(message, n);
     wclear(input_chat);
     chat.pos = chat.max = 0;
-
 }
 
-void Gui::RecvMessage() {
+void Gui::RecvMessage()
+{
     msg pmsg{};
     int mx, my;
     auto *game_struct = reinterpret_cast<tic_tac *>(pmsg.message);
@@ -193,15 +187,6 @@ void Gui::RecvMessage() {
             break;
         }
         switch (pmsg.code) {
-            // TODO: доделать ебаный список игр
-            case OPTIONS: {
-                int count = ((int *) pmsg.message)[0];
-                auto *buf = new char[count];
-                recv(sock, buf, sizeof(int) * count, 0);
-
-                delete[] buf;
-                break;
-            }
             case INIT: {
                 auto *init = reinterpret_cast<int *>(pmsg.message);
                 this->play.figure = init[0]; // figure
@@ -212,7 +197,15 @@ void Gui::RecvMessage() {
                 break;
             }
             case GAME: {
-                // TODO FAILED END
+                printMessage(pmsg.message, my);
+                play.winner = play.figure;
+                pmsg.code = FINISH_GAME;
+                game_struct->winner = play.figure;
+                send(sock, &pmsg, sizeof(msg), 0);
+                status = 0;
+                menu();
+                cur = 0;
+                play = tic_tac();
                 break;
             }
             case PROCESS_GAME: {
@@ -234,31 +227,30 @@ void Gui::RecvMessage() {
                 play = tic_tac();
                 break;
             }
-            default:
-                printMessage(pmsg.message, my);
+            default:printMessage(pmsg.message, my);
         }
     }
     waddstr(output_chat, "Disconnect from server");
     wrefresh(output_chat);
 }
 
-size_t Gui::rtrim(char *s) {
+size_t Gui::rtrim(char *s)
+{
     size_t n = strlen(s);
     for (size_t i = n - 1; i >= 0 && s[i] == ' '; --i, --n) s[i] = '\0';
     return n;
 }
 
-void Gui::createGame() {
+void Gui::createGame()
+{
     messageSend(const_cast<char *>("/gcreate"), strlen("/gcreate"));
 }
 
-void Gui::connectToGame() {
+void Gui::connectToGame()
+{
     messageSend(const_cast<char *>("/gconnect"), strlen("/gconnect"));
 }
 
-void Gui::serverList() {
-    messageSend(const_cast<char *>("/sglist"), strlen("/sglist"));
-}
 
 void Gui::sendGameProcess()
 {
@@ -269,9 +261,4 @@ void Gui::sendGameProcess()
     send(sock, &pmsg, sizeof(msg), 0);
     play.cur_player ^= 1;
     sleep(1);
-}
-
-void Gui::autoLose()
-{
-
 }

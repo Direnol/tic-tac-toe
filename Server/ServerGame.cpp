@@ -166,7 +166,7 @@ void ServerChat::switchProcessGame(int &status, msg *pmsg, int player, string &n
         send(player, pmsg, sizeof(msg), 0);
         return;
     }
-    string logger = name + "put " + (game_struct->figure == 0 ? "[X] to (" : "[0] to (") +
+    string logger = name + " put " + (game_struct->figure == 0 ? "[X] to (" : "[0] to (") +
         to_string(game_struct->i) + ',' + to_string(game_struct->j) + ')';
     logging(logger);
     send(players[name].second, pmsg, sizeof(msg), 0);

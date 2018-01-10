@@ -10,6 +10,7 @@
 
 void resize_term(int sig);
 
+123
 class Gui : public ClientChat {
 private:
     int mx, // MainWindow x
